@@ -1,0 +1,2374 @@
+<!DOCTYPE html>
+<html><head><base target="_top"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#0f172a;--ink2:#334155;--mut:#64748b;--ln:#e6eaf0;--ln2:#d3dae4;--pri:#1e3a8a;--acc:#2563eb;--accs:#eef3ff;--ok:#059669;--oks:#e7f8f1;--no:#e11d48;--nos:#fff1f3;--warn:#d97706;--warns:#fff7e6;--vio:#7c3aed;--vios:#f3eefe;--chip:#f3f6fa;--side:#0b1631;--sh:0 1px 2px rgba(15,23,42,.04),0 6px 20px rgba(15,23,42,.04)}
+@media(prefers-color-scheme:dark){:root{--bg:#0b1120;--card:#121a2b;--ink:#e8edf5;--ink2:#c3cddb;--mut:#8b97ab;--ln:#1f2a3d;--ln2:#2c3a52;--pri:#3b63d6;--acc:#3b82f6;--accs:#16233f;--ok:#34d399;--oks:#0f2e25;--no:#fb7185;--nos:#3a1520;--warn:#fbbf24;--warns:#33270c;--vio:#a78bfa;--vios:#251a40;--chip:#172138;--side:#070d1c;--sh:none}}
+/* auto display density: laptops get a compact scale so 100% browser zoom fits neatly */
+@media (min-width:901px) and (max-width:1680px){html{zoom:.9}}
+@media (min-width:901px) and (max-width:1440px),(min-width:901px) and (max-height:820px){html{zoom:.8}}
+*{box-sizing:border-box}html,body{height:100%;margin:0}
+body{font-family:'Plus Jakarta Sans',system-ui,sans-serif;background:var(--bg);color:var(--ink);font-size:15px;-webkit-font-smoothing:antialiased}
+.app{display:flex;height:100%}
+/* sidebar */
+aside{flex:none;width:290px;background:var(--side);color:#cbd5e1;display:flex;flex-direction:column}
+.me{display:flex;gap:16px;align-items:center;padding:22px 24px;border-bottom:1px solid rgba(255,255,255,.07);background:rgba(0,0,0,.18)}
+.av{flex:none;width:52px;height:52px;border-radius:14px;background:#13306e;color:#8ab8ff;display:grid;place-items:center;font-weight:800;font-size:19px;border:1px solid rgba(255,255,255,.1)}
+.me .mt{min-width:0}.me b{display:block;color:#fff;font-size:18px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.me small{display:block;color:#94a3b8;text-transform:uppercase;font-size:13px;letter-spacing:.04em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+nav{flex:1;overflow-y:auto;padding:22px 18px;display:flex;flex-direction:column;gap:6px}
+nav button{display:flex;align-items:center;gap:16px;width:100%;padding:16px 18px;border:0;border-radius:12px;background:transparent;color:#d6deea;font:inherit;font-size:17px;font-weight:600;cursor:pointer;text-align:left;transition:background .15s}
+nav button svg{flex:none;opacity:.85}nav button:hover{background:rgba(255,255,255,.06)}
+nav button.on{background:var(--acc);color:#fff;box-shadow:0 8px 20px rgba(37,99,235,.35)}nav button.on svg{opacity:1}
+.foot{padding:16px;text-align:center;color:#7b8aa6;font-size:14px;border-top:1px solid rgba(255,255,255,.07)}
+/* header */
+.col{flex:1;min-width:0;display:flex;flex-direction:column}
+.top{flex:none;display:flex;align-items:center;gap:14px;padding:14px clamp(16px,3vw,36px);background:var(--card);border-bottom:1px solid var(--ln)}
+.logo{flex:none;width:48px;height:48px;border-radius:12px;background:var(--pri);color:#fff;display:grid;place-items:center}
+.tx{flex:1;min-width:0;line-height:1.25}.tx b{display:block;font-size:21px;font-weight:800;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.tx small{color:var(--mut);font-size:15px}
+.who{color:var(--ink2);font-size:15px;margin-right:6px;white-space:nowrap}.who span{color:var(--mut)}
+.acts{display:flex;gap:10px}
+.tb{display:inline-flex;align-items:center;gap:8px;height:44px;padding:0 16px;border-radius:10px;border:1px solid var(--ln);background:var(--chip);color:var(--ink2);font:inherit;font-weight:600;cursor:pointer;white-space:nowrap}
+.tb.p{background:var(--pri);border-color:var(--pri);color:#fff}.tb.p:hover{filter:brightness(1.15)}
+#mb{display:none;flex:none;width:42px;height:42px;place-items:center;border:1px solid var(--ln);border-radius:10px;background:var(--chip);color:var(--ink);cursor:pointer}
+#scrim{display:none;position:fixed;inset:0;background:rgba(2,6,23,.5);z-index:25}
+main{flex:1;min-height:0;min-width:0;overflow-y:auto;padding:28px clamp(16px,3vw,48px) 48px}
+.wrap{width:100%;max-width:1560px;margin:0 auto;container:main/inline-size}
+/* page heading */
+.ph{display:flex;align-items:flex-end;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:24px}
+.ph h2{margin:0;font-size:clamp(22px,2.2vw,28px);font-weight:800;letter-spacing:-.02em}.ph p{margin:4px 0 0;color:var(--mut);font-size:15px}
+.mp{display:flex;align-items:center;gap:8px}.mp input{width:180px}
+.ib{flex:none;display:grid;place-items:center;width:46px;height:46px;border-radius:10px;border:1px solid var(--ln2);background:var(--card);color:var(--ink2);cursor:pointer}.ib:hover{background:var(--chip)}
+/* cards */
+.card{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:clamp(18px,2vw,28px);margin-bottom:24px;box-shadow:var(--sh);min-width:0}
+.ch{display:flex;align-items:center;gap:14px;margin-bottom:22px}
+.chi{flex:none;width:46px;height:46px;border-radius:12px;background:var(--accs);color:var(--acc);display:grid;place-items:center}
+.chi.green{background:var(--oks);color:var(--ok)}.chi.red{background:var(--nos);color:var(--no)}.chi.amber{background:var(--warns);color:var(--warn)}.chi.vio{background:var(--vios);color:var(--vio)}
+.ct{font-size:19px;font-weight:700;letter-spacing:-.01em}.cs{color:var(--mut);font-size:14.5px;margin-top:2px}.ch .cr{margin-left:auto;color:var(--mut);font-size:14.5px;white-space:nowrap;display:flex;gap:8px;align-items:center}
+.mut{color:var(--mut);font-size:14px}
+.lb{display:block;font-size:13px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2);margin-bottom:9px}
+.f{margin-bottom:20px;min-width:0}.f.hide{display:none}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 18px}.grid .full{grid-column:1/-1}
+@container main (max-width:520px){.grid{grid-template-columns:minmax(0,1fr)}}
+.g2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 24px;align-items:start}
+@container main (max-width:900px){.g2{grid-template-columns:minmax(0,1fr)}}
+.g12{display:grid;grid-template-columns:minmax(340px,1fr) 2fr;gap:0 24px;align-items:start}
+@container main (max-width:1050px){.g12{grid-template-columns:minmax(0,1fr)}}
+.btns{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.btns.end{justify-content:flex-end}
+/* inputs */
+input,select,textarea{width:100%;height:50px;padding:0 16px;border-radius:10px;border:1px solid var(--ln2);background:var(--card);color:var(--ink);font:inherit;font-size:15.5px;outline:none;transition:border-color .15s,box-shadow .15s}
+textarea{height:auto;padding:14px 16px;resize:vertical;line-height:1.5}
+input::placeholder,textarea::placeholder{color:#94a3b8}
+input:focus,select:focus,textarea:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(37,99,235,.15)}
+select{appearance:none;-webkit-appearance:none;padding-right:42px;cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center}
+input[type=color]{padding:4px 6px;cursor:pointer}input[type=checkbox]{width:auto;height:auto;accent-color:var(--acc)}
+.srch{position:relative;flex:1;min-width:180px}.srch svg{position:absolute;left:15px;top:50%;transform:translateY(-50%);color:var(--mut)}.srch input{padding-left:46px}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:46px;padding:0 22px;border-radius:10px;border:1px solid var(--ln2);background:var(--card);color:var(--ink);font:inherit;font-weight:600;cursor:pointer;text-decoration:none;white-space:nowrap}
+.btn:hover{background:var(--chip)}.btn.p{background:var(--pri);border-color:var(--pri);color:#fff}.btn.p:hover{filter:brightness(1.15);background:var(--pri)}
+.btn.d{color:var(--no)}.btn.dd{background:var(--no);border-color:var(--no);color:#fff}.btn.s{height:34px;padding:0 12px;font-size:13.5px}.btn.wide{width:100%}
+.btn.ic{width:34px;padding:0}
+body.b .btn.p,body.b .btn.dd{opacity:.6;pointer-events:none}
+/* stats: split evenly by the space the content area actually has */
+.stats{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:clamp(12px,1.6vw,24px);margin-bottom:24px}
+@container main (max-width:1050px){.stats[data-n="4"],.stats[data-n="6"]{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container main (max-width:640px){.stats[data-n="3"]{grid-template-columns:minmax(0,1fr)}}
+@container main (max-width:420px){.stats{grid-template-columns:minmax(0,1fr)!important}.stats.cmp{grid-template-columns:repeat(2,minmax(0,1fr))!important}.stats.cmp .stat b{font-size:24px}.stats.cmp .stat small{font-size:13px}}
+.stat{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:clamp(18px,2vw,26px) clamp(18px,2vw,28px);box-shadow:var(--sh);min-width:0}
+.stat .sl{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-size:13.5px;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink2)}.stat .si{color:var(--mut);flex:none}
+.stat b{display:block;font-size:clamp(24px,2.4vw,32px);font-weight:800;margin:14px 0 8px;letter-spacing:-.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.stat small{color:var(--mut);font-size:14.5px;line-height:1.45}
+/* lists */
+.empty{padding:44px 16px;text-align:center;color:var(--mut);font-size:15.5px;line-height:1.5}
+.item{padding:14px 0;border-bottom:1px solid var(--ln)}.item:last-child{border-bottom:0}
+.it{display:flex;gap:10px;align-items:center;justify-content:space-between}.it b{font-size:15.5px;font-weight:600}.item .m{color:var(--mut);font-size:13.5px;margin-top:4px}
+.kv{display:flex;justify-content:space-between;gap:10px;font-size:14.5px;margin:6px 0}.kv span{color:var(--mut)}.kv b{font-variant-numeric:tabular-nums}
+.pill{display:inline-block;font-size:12.5px;font-weight:600;padding:3px 10px;border-radius:20px;background:var(--accs);color:var(--acc);white-space:nowrap}
+.pill.g{background:var(--chip);color:var(--mut)}.pill.in,.pill.Completed,.pill.Bought{background:var(--oks);color:var(--ok)}.pill.ex,.pill.High,.pill.late{background:var(--nos);color:var(--no)}
+.pill.tr{background:var(--vios);color:var(--vio)}.pill.Medium,.pill.On{background:var(--warns);color:var(--warn)}.pill.Low{background:var(--chip);color:var(--ink2)}.pill.Cancelled{background:var(--chip);color:var(--mut)}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:8px;vertical-align:middle;flex:none}
+.pos{color:var(--ok)}.neg{color:var(--no)}.num{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+/* progress */
+.bar{height:8px;background:var(--chip);border-radius:99px;overflow:hidden;margin:8px 0}.bar>i{display:block;height:100%;background:var(--acc);border-radius:99px}
+.bar.ok>i{background:var(--ok)}.bar.near>i{background:var(--warn)}.bar.over>i{background:var(--no)}.bar.spent>i{background:var(--vio)}
+/* callouts */
+.note{border-radius:12px;padding:14px 16px;margin-bottom:16px;font-size:14.5px;line-height:1.5}
+.note.good{background:var(--oks);color:var(--ok)}.note.bad{background:var(--nos);color:var(--no)}.note.info{background:var(--accs);color:var(--acc)}
+/* tables */
+table{width:100%;border-collapse:collapse;font-size:15px}
+th{background:var(--chip);text-transform:uppercase;letter-spacing:.06em;font-size:12.5px;font-weight:700;color:var(--ink2);padding:15px 18px;text-align:left;white-space:nowrap}
+td{padding:13px 18px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:middle}
+th.num,td.num{text-align:right}
+.tw{background:var(--card);border:1px solid var(--ln);border-radius:18px;overflow:hidden;margin-bottom:24px;box-shadow:var(--sh);min-width:0}
+.tw .ov{overflow-x:auto}.tw tr:last-child td{border-bottom:0}
+.twh{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;padding:18px 20px;border-bottom:1px solid var(--ln)}
+.twh .t{display:flex;align-items:center;gap:12px;font-weight:700;font-size:17px}
+.twf{display:flex;gap:10px;flex-wrap:wrap;padding:16px 20px;border-bottom:1px solid var(--ln);background:var(--card)}.twf select{width:auto;min-width:150px;flex:1}
+tfoot td{font-weight:700;background:var(--chip)}
+.card table td,.card table th{padding-left:0;padding-right:0;background:none}.card table th{border-bottom:1px solid var(--ln)}
+.card tfoot td{background:none}
+/* tabs */
+.sub{display:flex;width:fit-content;max-width:100%;gap:4px;padding:5px;background:var(--chip);border:1px solid var(--ln);border-radius:14px;overflow-x:auto}
+.sub button{padding:10px 18px;border:0;border-radius:10px;background:transparent;color:var(--ink2);font:inherit;font-size:15px;font-weight:600;cursor:pointer;white-space:nowrap}
+.sub button.on{background:var(--card);color:var(--ink);box-shadow:0 1px 3px rgba(15,23,42,.1)}
+.sub.full{width:100%}.sub.full button{flex:1}
+.sub .n{margin-left:6px;font-size:12px;color:var(--mut)}
+.bar-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
+/* charts & project cards */
+.chart{position:relative;height:290px}
+.pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
+@container main (max-width:1150px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@container main (max-width:680px){.pgrid{grid-template-columns:minmax(0,1fr)}}
+.pgrid .card{margin:0;display:flex;flex-direction:column}.pgrid .card .btns{margin-top:auto;padding-top:18px}
+.items{margin-top:14px;border-top:1px solid var(--ln);padding-top:12px}
+/* modal */
+#modal{position:fixed;inset:0;background:rgba(2,6,23,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:45}
+#modal.open{display:flex}
+.mc{background:var(--card);border-radius:18px;padding:clamp(18px,3vw,28px);width:100%;max-width:600px;max-height:92vh;overflow:auto;box-shadow:0 24px 60px rgba(2,6,23,.35);container:main/inline-size}
+.mc p{margin:0 0 18px;color:var(--ink2);line-height:1.5}
+/* misc */
+#ld{display:none;position:fixed;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,transparent,var(--acc),transparent) no-repeat;background-size:40% 100%;animation:l 1s linear infinite;z-index:60}@keyframes l{from{background-position:-40% 0}to{background-position:140% 0}}
+#toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#0f172a;color:#fff;padding:12px 20px;border-radius:12px;opacity:0;transition:.3s;pointer-events:none;max-width:90%;text-align:center;z-index:70;font-weight:500}#toast.s{opacity:1}#toast.e{background:#be123c}
+/* nav badge & SMS inbox */
+nav button{position:relative}.nb{margin-left:auto;min-width:24px;text-align:center;background:#f43f5e;color:#fff;font-size:12px;font-weight:700;border-radius:20px;padding:2px 8px}
+.ibx{padding:18px 20px;border-bottom:1px solid var(--ln);display:grid;grid-template-columns:minmax(0,1fr) minmax(280px,420px);gap:12px 24px;align-items:center}
+.ibx:last-child{border-bottom:0}.ibx .amt{font-size:18px;font-weight:800;white-space:nowrap}
+.ibx .ctl{display:flex;flex-direction:column;gap:10px}.ibx .ctl .row2{display:flex;gap:8px}.ibx .ctl select{height:44px}
+.ibx .chk{display:flex;align-items:center;gap:8px;font-size:13.5px;color:var(--ink2)}
+.ibx details{margin-top:8px}.ibx summary{cursor:pointer;color:var(--acc);font-size:13px;font-weight:600}
+.sms{margin-top:8px;padding:10px 12px;border-radius:10px;background:var(--chip);color:var(--ink2);font-size:13.5px;line-height:1.5;word-break:break-word}
+.hint{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;padding:10px 12px;border-radius:10px;background:var(--vios);color:var(--vio);font-size:13.5px;font-weight:600}
+@container main (max-width:820px){.ibx{grid-template-columns:minmax(0,1fr)}}
+.steps{margin:0;padding-left:20px;line-height:1.7;color:var(--ink2)}.steps li{margin-bottom:8px}
+.code{display:flex;gap:8px}.code input{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13.5px}
+.mono{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:13px;background:var(--chip);padding:2px 6px;border-radius:6px}
+.trunc{max-width:520px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+/* slim icon sidebar on small laptops / landscape tablets */
+@media(min-width:901px) and (max-width:1200px){.nb{position:absolute;top:6px;right:8px;padding:1px 6px;min-width:0;font-size:11px}aside{width:88px}.me{justify-content:center;padding:18px 0}.me .mt,nav button span,.foot{display:none}nav{padding:18px 14px}nav button{justify-content:center;padding:14px 0}}
+/* phones & portrait tablets: sidebar slides in */
+#txTable td,#txTable th{padding-left:14px;padding-right:14px}
+@media(max-width:480px){.tx small{display:none}}
+@media(max-width:900px){aside{position:fixed;inset:0 auto 0 0;z-index:30;width:280px;transform:translateX(-100%);transition:transform .25s}aside.open{transform:none;box-shadow:6px 0 24px rgba(0,0,0,.4)}
+ #mb{display:grid}.who{display:none}.tb span{display:none}.tb{padding:0 12px}.top{padding:12px 14px}.tx b{font-size:17px}.tx small{font-size:13px}.logo{width:42px;height:42px}
+ main{padding:18px 14px 40px}.mp{width:100%}.mp input{flex:1;width:auto}.chart{height:250px}}
+</style></head><body>
+<div id="ld"></div>
+<div class="app">
+ <aside id="side"><div class="me"><div class="av" id="av">·</div><div class="mt"><b id="meN">Pecunia</b><small id="meR">Personal account</small></div></div><nav id="nav"></nav><div class="foot">Personal Finance Manager</div></aside>
+ <div class="col">
+  <header class="top"><button id="mb" data-act="menu" aria-label="Menu"></button><div class="logo" id="logo"></div><div class="tx"><b>Pecunia</b><small id="hsub">Income, spending &amp; plans</small></div><div class="who" id="who"></div><div class="acts"><button class="tb p" id="tbAdd" data-act="quickAdd"></button></div></header>
+  <main id="main"><div class="wrap" id="view"><div class="empty">Loading Pecunia…</div></div></main>
+ </div>
+</div>
+<div id="scrim" data-act="menu" data-id="0"></div><div id="modal"></div><div id="toast"></div>
+
+<title>Pecunia</title>
+<meta name="description" content="Pecunia – track income and spending, plan projects and purchases.">
+<script src="https://accounts.google.com/gsi/client"></script>
+<script>
+/* ===== Pecunia settings: paste your Google OAuth Web client ID here ===== */
+window.PECUNIA_CONFIG = { clientId: '142105633369-hto2q85cr8s1vhdcq0h5usmq3qel5rpa.apps.googleusercontent.com' };
+window.PECUNIA_WEB = true;
+</script>
+<script>
+/*
+ * Pecunia web runtime.
+ * Runs the same Code.gs and Index.html (unchanged UI) in the browser. Instead of Apps Script,
+ * the data lives in a "Pecunia – Data" Google Sheet in the signed-in user's own Drive,
+ * reached with Google sign-in and the Sheets/Drive APIs (drive.file scope: the app can only
+ * see files it created).
+ */
+(function () {
+  'use strict';
+
+  var CFG = window.PECUNIA_CONFIG || {};
+  var SCOPE = 'https://www.googleapis.com/auth/drive.file';
+  var SHEETS = 'https://sheets.googleapis.com/v4/spreadsheets';
+  var DRIVE = 'https://www.googleapis.com/drive/v3';
+  var DATE_COLS = /^(Date|StartDate|TargetDate|SmsDate|CreatedAt)$/;
+
+  var token = null, tokenExp = 0, tokenClient = null;
+  var userEmail = '', userName = '';
+  var sheetId = '', sheetUrl = '', sheetTz = '';
+  var CUR = null;                       // the in-memory spreadsheet for the current call
+  var memProps = {};                    // PropertiesService stand-in (per page load)
+  var readyResolve, ready = new Promise(function (r) { readyResolve = r; });
+
+  /* ------------------------------------------------------------------ */
+  /* Small helpers                                                      */
+  /* ------------------------------------------------------------------ */
+
+  function pad2(n) { return (n < 10 ? '0' : '') + n; }
+  function isoDate(d) { return d.getFullYear() + '-' + pad2(d.getMonth() + 1) + '-' + pad2(d.getDate()); }
+  function ls(k, v) {
+    try {
+      if (v === undefined) return localStorage.getItem(k);
+      if (v === null) localStorage.removeItem(k); else localStorage.setItem(k, v);
+    } catch (e) { return null; }
+  }
+  function ss(k, v) {
+    try {
+      if (v === undefined) return sessionStorage.getItem(k);
+      if (v === null) sessionStorage.removeItem(k); else sessionStorage.setItem(k, v);
+    } catch (e) { return null; }
+  }
+
+  /** A cell value as written to the sheet: dates as yyyy-MM-dd text, text without the ' prefix. */
+  function outCell(v) {
+    if (v === null || v === undefined) return '';
+    if (v instanceof Date) return isNaN(v.getTime()) ? '' : isoDate(v);
+    if (typeof v === 'string' && v.charAt(0) === "'") return v.slice(1);
+    return v;
+  }
+
+  /** Google Sheets serial day number -> yyyy-MM-dd (for sheets that hold real dates). */
+  function serialToIso(n) {
+    var ms = Math.round((n - 25569) * 86400000);
+    var d = new Date(ms);
+    return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth() + 1) + '-' + pad2(d.getUTCDate());
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Sign-in overlay (styled with the app's own classes)                */
+  /* ------------------------------------------------------------------ */
+
+  var overlay = null;
+  function showOverlay(title, text, button, onClick, error) {
+    if (!overlay) {
+      overlay = document.createElement('div');
+      overlay.id = 'pecuniaGate';
+      overlay.style.cssText = 'position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px;background:var(--bg,#f6f8fb)';
+      document.body.appendChild(overlay);
+    }
+    overlay.innerHTML =
+      '<div class="card" style="max-width:420px;width:100%;text-align:center;padding:32px 28px;margin:0">' +
+      '<div style="width:60px;height:60px;border-radius:16px;background:var(--pri,#1e3a8a);color:#fff;display:grid;place-items:center;margin:0 auto 16px">' +
+      '<svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/></svg></div>' +
+      '<div style="font-size:24px;font-weight:800;letter-spacing:-.02em">' + title + '</div>' +
+      '<p style="color:var(--mut,#64748b);margin:8px 0 22px;line-height:1.5">' + text + '</p>' +
+      (button ? '<button class="btn p wide" id="pecuniaBtn" style="width:100%;pointer-events:auto;opacity:1">' + button + '</button>' : '<div class="mut">Please wait…</div>') +
+      (error ? '<div class="note bad" style="margin:16px 0 0;text-align:left">' + error + '</div>' : '') +
+      '</div>';
+    overlay.style.display = 'flex';
+    var ld = document.getElementById('ld');
+    if (ld) ld.style.visibility = button ? 'hidden' : 'visible';   // no loading bar while waiting for the user
+    var b = document.getElementById('pecuniaBtn');
+    if (b && onClick) b.onclick = onClick;
+  }
+  function hideOverlay() {
+    if (overlay) overlay.style.display = 'none';
+    var ld = document.getElementById('ld');
+    if (ld) ld.style.visibility = 'visible';
+  }
+
+  function esc(s) { return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]; }); }
+
+  /* ------------------------------------------------------------------ */
+  /* Google sign-in (Google Identity Services token model)              */
+  /* ------------------------------------------------------------------ */
+
+  var pendingToken = null;
+  function requestToken(prompt) {
+    return new Promise(function (resolve, reject) {
+      if (!window.google || !google.accounts || !google.accounts.oauth2) {
+        reject(new Error('Google sign-in could not load. Check your internet connection and reload.'));
+        return;
+      }
+      if (!CFG.clientId || /PASTE/.test(CFG.clientId)) {
+        reject(new Error('This Pecunia site is not configured yet (missing Google client ID).'));
+        return;
+      }
+      pendingToken = { resolve: resolve, reject: reject };
+      if (!tokenClient) {
+        tokenClient = google.accounts.oauth2.initTokenClient({
+          client_id: CFG.clientId,
+          scope: SCOPE,
+          callback: function (resp) {
+            var p = pendingToken; pendingToken = null;
+            if (!p) return;
+            if (resp.error) { p.reject(new Error(resp.error_description || resp.error)); return; }
+            token = resp.access_token;
+            tokenExp = Date.now() + (Number(resp.expires_in || 3600) - 120) * 1000;
+            ss('pecunia_token', token); ss('pecunia_exp', String(tokenExp));
+            p.resolve(token);
+          },
+          error_callback: function (err) {
+            var p = pendingToken; pendingToken = null;
+            if (p) p.reject(new Error(err && err.type === 'popup_closed' ? 'Sign-in was closed before it finished.' : 'Sign-in did not complete (' + (err && err.type || 'error') + ').'));
+          }
+        });
+      }
+      var opts = { prompt: prompt };
+      var hint = ls('pecunia_email');
+      if (hint) opts.login_hint = hint;
+      tokenClient.requestAccessToken(opts);
+    });
+  }
+
+  /** A valid token; asks the user (with a button, so the popup is allowed) when it has expired. */
+  function ensureToken() {
+    if (token && Date.now() < tokenExp) return Promise.resolve(token);
+    return new Promise(function (resolve, reject) {
+      showOverlay('Session expired', 'For your security, please continue with Google to keep working.', 'Continue with Google', function () {
+        showOverlay('Signing in…', 'Finish signing in in the Google window.');
+        requestToken('').then(function (t) { hideOverlay(); resolve(t); }, function (e) {
+          showOverlay('Session expired', 'For your security, please continue with Google to keep working.', 'Continue with Google', null, esc(e.message));
+          document.getElementById('pecuniaBtn').onclick = function () { ensureToken().then(resolve, reject); };
+        });
+      });
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Google APIs                                                        */
+  /* ------------------------------------------------------------------ */
+
+  function api(method, url, body, retried) {
+    return ensureToken().then(function (t) {
+      return fetch(url, {
+        method: method,
+        headers: Object.assign({ Authorization: 'Bearer ' + t }, body ? { 'Content-Type': 'application/json' } : {}),
+        body: body ? JSON.stringify(body) : undefined
+      });
+    }).then(function (res) {
+      if (res.status === 401 && !retried) { token = null; tokenExp = 0; return api(method, url, body, true); }
+      return res.text().then(function (txt) {
+        var j = null;
+        try { j = txt ? JSON.parse(txt) : {}; } catch (e) { j = { raw: txt }; }
+        if (!res.ok) {
+          var msg = j && j.error && j.error.message ? j.error.message : ('Google error ' + res.status);
+          if (res.status === 403 && /has not been used|is disabled/i.test(msg)) msg = 'The Google Sheets or Drive API is not enabled for this Pecunia site yet.';
+          throw new Error(msg);
+        }
+        return j;
+      });
+    });
+  }
+
+  function findOrCreateSheet() {
+    var q = encodeURIComponent("appProperties has { key='pecunia' and value='data' } and trashed=false");
+    return api('GET', DRIVE + '/files?q=' + q + '&spaces=drive&fields=files(id,webViewLink)&orderBy=createdTime').then(function (r) {
+      if (r.files && r.files.length) return r.files[0];
+      return api('POST', DRIVE + '/files?fields=id,webViewLink', {
+        name: 'Pecunia – Data',
+        mimeType: 'application/vnd.google-apps.spreadsheet',
+        appProperties: { pecunia: 'data' },
+        description: 'Your Pecunia data. Used by the Pecunia app and website.'
+      });
+    }).then(function (f) {
+      sheetId = f.id;
+      sheetUrl = f.webViewLink || ('https://docs.google.com/spreadsheets/d/' + f.id + '/edit');
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* In-memory spreadsheet with the SpreadsheetApp methods Code.gs uses */
+  /* ------------------------------------------------------------------ */
+
+  function Sheet(book, title, id, rows) {
+    this.book = book; this.title = title; this.id = id; this.d = rows || []; this.dirty = false;
+  }
+  Sheet.prototype.getName = function () { return this.title; };
+  Sheet.prototype.getLastRow = function () {
+    for (var i = this.d.length - 1; i >= 0; i--) {
+      var r = this.d[i] || [];
+      for (var j = 0; j < r.length; j++) if (r[j] !== '' && r[j] !== null && r[j] !== undefined) return i + 1;
+    }
+    return 0;
+  };
+  Sheet.prototype.getLastColumn = function () {
+    var m = 0;
+    for (var i = 0; i < this.d.length; i++) {
+      var r = this.d[i] || [];
+      for (var j = r.length - 1; j >= 0; j--) if (r[j] !== '' && r[j] !== null && r[j] !== undefined) { if (j + 1 > m) m = j + 1; break; }
+    }
+    return m;
+  };
+  Sheet.prototype.getRange = function (r, c, nr, nc) {
+    var sh = this; nr = nr || 1; nc = nc || 1;
+    var rng = {
+      getValues: function () {
+        var o = [];
+        for (var i = 0; i < nr; i++) {
+          var row = [];
+          for (var j = 0; j < nc; j++) { var v = (sh.d[r - 1 + i] || [])[c - 1 + j]; row.push(v === undefined || v === null ? '' : v); }
+          o.push(row);
+        }
+        return o;
+      },
+      setValues: function (v) {
+        for (var i = 0; i < nr; i++) {
+          sh.d[r - 1 + i] = sh.d[r - 1 + i] || [];
+          for (var j = 0; j < nc; j++) sh.d[r - 1 + i][c - 1 + j] = outCell(v[i][j]);
+        }
+        sh.dirty = true; return rng;
+      },
+      setValue: function (v) { return rng.setValues([[v]]); },
+      clearContent: function () {
+        for (var i = 0; i < nr; i++) { var row = sh.d[r - 1 + i]; if (row) for (var j = 0; j < nc; j++) row[c - 1 + j] = ''; }
+        sh.dirty = true; return rng;
+      },
+      setFontWeight: function () { return rng; }, setBackground: function () { return rng; }, setFontColor: function () { return rng; }
+    };
+    return rng;
+  };
+  Sheet.prototype.appendRow = function (a) {
+    var n = this.getLastRow();
+    this.d.splice(n, this.d.length - n, a.map(outCell));
+    this.dirty = true;
+  };
+  Sheet.prototype.deleteRow = function (r) { this.d.splice(r - 1, 1); this.dirty = true; };
+  Sheet.prototype.setFrozenRows = function () {};
+
+  function Book(sheets) { this.sheets = sheets; this.added = []; this.deleted = []; }
+  Book.prototype.getSheetByName = function (n) { for (var i = 0; i < this.sheets.length; i++) if (this.sheets[i].title === n) return this.sheets[i]; return null; };
+  Book.prototype.insertSheet = function (n) { var s = new Sheet(this, n, null, []); s.dirty = true; this.sheets.push(s); this.added.push(s); return s; };
+  Book.prototype.getSheets = function () { return this.sheets.slice(); };
+  Book.prototype.deleteSheet = function (s) {
+    this.sheets = this.sheets.filter(function (x) { return x !== s; });
+    var i = this.added.indexOf(s);
+    if (i > -1) this.added.splice(i, 1); else if (s.id !== null) this.deleted.push(s.id);
+  };
+  Book.prototype.getSpreadsheetTimeZone = function () { return sheetTz || 'UTC'; };
+  Book.prototype.getUrl = function () { return sheetUrl; };
+  Book.prototype.getId = function () { return sheetId; };
+
+  function loadBook() {
+    var fields = 'properties(timeZone),sheets(properties(sheetId,title),data(rowData(values(effectiveValue))))';
+    return api('GET', SHEETS + '/' + sheetId + '?includeGridData=true&fields=' + encodeURIComponent(fields)).then(function (r) {
+      sheetTz = (r.properties && r.properties.timeZone) || sheetTz;
+      var list = (r.sheets || []).map(function (s) {
+        var rows = [];
+        var data = (s.data && s.data[0] && s.data[0].rowData) || [];
+        var headers = [];
+        data.forEach(function (rd, ri) {
+          var row = [];
+          (rd.values || []).forEach(function (cell, ci) {
+            var ev = cell && cell.effectiveValue;
+            var v = '';
+            if (ev) {
+              if (ev.numberValue !== undefined) v = ev.numberValue;
+              else if (ev.stringValue !== undefined) v = ev.stringValue;
+              else if (ev.boolValue !== undefined) v = ev.boolValue;
+            }
+            if (ri > 0 && typeof v === 'number' && DATE_COLS.test(headers[ci] || '') && v > 20000 && v < 80000) v = serialToIso(v);
+            row.push(v);
+          });
+          if (ri === 0) headers = row.map(String);
+          rows.push(row);
+        });
+        return new Sheet(null, s.properties.title, s.properties.sheetId, rows);
+      });
+      var book = new Book(list);
+      list.forEach(function (s) { s.book = book; });
+      return book;
+    });
+  }
+
+  function q(title) { return "'" + String(title).replace(/'/g, "''") + "'"; }
+
+  function saveBook(book) {
+    var steps = Promise.resolve();
+    var structural = [];
+    book.added.forEach(function (s) { structural.push({ addSheet: { properties: { title: s.title, gridProperties: { frozenRowCount: 1 } } } }); });
+    book.deleted.forEach(function (id) { structural.push({ deleteSheet: { sheetId: id } }); });
+    if (structural.length) steps = steps.then(function () { return api('POST', SHEETS + '/' + sheetId + ':batchUpdate', { requests: structural }); });
+    var dirty = book.sheets.filter(function (s) { return s.dirty; });
+    if (!dirty.length) return steps;
+    return steps.then(function () {
+      return api('POST', SHEETS + '/' + sheetId + '/values:batchClear', { ranges: dirty.map(function (s) { return q(s.title); }) });
+    }).then(function () {
+      var data = [];
+      dirty.forEach(function (s) {
+        var n = s.getLastRow(), w = s.getLastColumn();
+        if (!n || !w) return;
+        var vals = [];
+        for (var i = 0; i < n; i++) {
+          var r = s.d[i] || [], row = [];
+          for (var j = 0; j < w; j++) row.push(r[j] === undefined || r[j] === null ? '' : r[j]);
+          vals.push(row);
+        }
+        data.push({ range: q(s.title) + '!A1', values: vals });
+      });
+      if (!data.length) return null;
+      return api('POST', SHEETS + '/' + sheetId + '/values:batchUpdate', { valueInputOption: 'RAW', data: data });
+    });
+  }
+
+  /* ------------------------------------------------------------------ */
+  /* Apps Script service stand-ins used by Code.gs                      */
+  /* ------------------------------------------------------------------ */
+
+  window.SpreadsheetApp = {
+    getActiveSpreadsheet: function () { return CUR; },
+    openById: function () { return CUR; },
+    create: function () { return CUR; }
+  };
+  window.PropertiesService = {
+    getScriptProperties: function () {
+      return {
+        getProperty: function (k) { return memProps.hasOwnProperty(k) ? memProps[k] : null; },
+        setProperty: function (k, v) { memProps[k] = String(v); }
+      };
+    }
+  };
+  window.LockService = { getScriptLock: function () { return { waitLock: function () {}, releaseLock: function () {} }; } };
+  window.Session = {
+    getEffectiveUser: function () { return { getEmail: function () { return userEmail; } }; },
+    getActiveUser: function () { return { getEmail: function () { return userEmail; } }; }
+  };
+  window.Utilities = {
+    formatDate: function (d) { return isoDate(d instanceof Date ? d : new Date(d)); },
+    getUuid: function () {
+      if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+      return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) { var r = Math.random() * 16 | 0; return (c === 'x' ? r : (r & 3 | 8)).toString(16); });
+    }
+  };
+  window.ScriptApp = { getService: function () { return { getUrl: function () { return location.origin + location.pathname; } }; } };
+  window.Logger = { log: function (m) { if (window.console) console.log(m); } };
+
+  /* ------------------------------------------------------------------ */
+  /* google.script.run: each call loads the sheet, runs Code.gs, saves  */
+  /* ------------------------------------------------------------------ */
+
+  var queue = Promise.resolve();
+  function callServer(fn, args) {
+    var job = queue.then(function () { return ready; }).then(function () {
+      return loadBook();
+    }).then(function (book) {
+      CUR = book;
+      if (typeof window[fn] !== 'function') throw new Error('Unknown action: ' + fn);
+      var result = window[fn].apply(null, args);
+      return saveBook(book).then(function () { return result === undefined ? null : JSON.parse(JSON.stringify(result)); });
+    });
+    queue = job.catch(function () {});
+    return job;
+  }
+
+  function runner(ok, fail) {
+    return new Proxy({}, {
+      get: function (_, k) {
+        if (k === 'withSuccessHandler') return function (f) { return runner(f, fail); };
+        if (k === 'withFailureHandler') return function (f) { return runner(ok, f); };
+        if (k === 'withUserObject') return function () { return runner(ok, fail); };
+        return function () {
+          var args = Array.prototype.slice.call(arguments);
+          callServer(k, args).then(function (r) { if (ok) ok(r); }, function (e) {
+            if (fail) fail(e instanceof Error ? e : new Error(String(e)));
+          });
+        };
+      }
+    });
+  }
+  window.google = window.google || {};
+  window.google.script = { get run() { return runner(null, null); } };
+
+  /* ------------------------------------------------------------------ */
+  /* Start: sign in, find or create the sheet                           */
+  /* ------------------------------------------------------------------ */
+
+  function afterToken() {
+    showOverlay('Opening your finances…', 'Finding your Pecunia sheet in your Google Drive.');
+    return api('GET', DRIVE + '/about?fields=user(emailAddress,displayName)').then(function (r) {
+      userEmail = (r.user && r.user.emailAddress) || '';
+      userName = (r.user && r.user.displayName) || '';
+      if (userEmail) ls('pecunia_email', userEmail);
+      return findOrCreateSheet();
+    }).then(function () {
+      hideOverlay();
+      readyResolve();
+    });
+  }
+
+  function signIn() {
+    showOverlay('Signing in…', 'Finish signing in in the Google window.');
+    requestToken(ls('pecunia_email') ? '' : 'select_account').then(afterToken).catch(function (e) {
+      gate(esc(e.message));
+    });
+  }
+
+  function gate(error) {
+    showOverlay('Pecunia', 'Track income and spending, plan projects and purchases. Your data stays in your own Google Drive.',
+      '<svg width="18" height="18" viewBox="0 0 48 48" style="vertical-align:-3px;margin-right:8px"><path fill="#FFC107" d="M43.6 20.5H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 12.9 4 4 12.9 4 24s8.9 20 20 20 20-8.9 20-20c0-1.3-.1-2.4-.4-3.5z"/><path fill="#FF3D00" d="m6.3 14.7 6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.9 1.2 8 3.1l5.7-5.7C34 6.1 29.3 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2c-2 1.5-4.5 2.4-7.2 2.4-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.5H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C37 39.2 44 34 44 24c0-1.3-.1-2.4-.4-3.5z"/></svg>Sign in with Google',
+      signIn, error);
+  }
+
+  /** Called from the Settings page (web only). */
+  window.pecuniaSignOut = function () {
+    try { if (token && google.accounts && google.accounts.oauth2) google.accounts.oauth2.revoke(token, function () {}); } catch (e) {}
+    ss('pecunia_token', null); ss('pecunia_exp', null); ls('pecunia_email', null);
+    location.reload();
+  };
+  window.pecuniaUser = function () { return { email: userEmail, name: userName }; };
+
+  function start() {
+    var t = ss('pecunia_token'), exp = Number(ss('pecunia_exp') || 0);
+    if (t && Date.now() < exp) {
+      token = t; tokenExp = exp;
+      afterToken().catch(function (e) { token = null; tokenExp = 0; gate(esc(e.message)); });
+    } else {
+      gate();
+    }
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start); else start();
+})();
+
+</script>
+<script>
+/* ===== Finance logic (same as Code.gs) ===== */
+/**
+ * PERSONAL FINANCE MANAGER — Google Apps Script web app
+ * Backend: a Google Sheet. Works two ways:
+ *   - Standalone (script.google.com): the data sheet "My Finances – Data" is
+ *     created in your Drive automatically on first run.
+ *   - Bound (Extensions > Apps Script inside a Sheet): uses that Sheet.
+ *
+ * Sheets (created automatically on first run):
+ *   Transactions, Categories, Accounts, Projects, Purchases, Settings, SmsLog, Rules
+ *
+ * SMS capture: your phone forwards MoMo / bank SMS alerts to this web app (doPost)
+ * with a secret key. Each message is read, recorded against the matching account and
+ * auto-categorised by your rules; anything new lands in the SMS Inbox to categorise.
+ * The app itself only opens for you (the script owner).
+ *
+ * Setup: script.google.com > New project, paste this file as Code.gs and the
+ * HTML as an HTML file named Index, run setup() once (it logs the sheet link),
+ * then Deploy > New deployment > Web app (Execute as: Me, Access: Only myself).
+ */
+
+const APP_TITLE = 'My Finances';
+
+const SCHEMA = {
+  Transactions: ['ID', 'Date', 'Type', 'Category', 'Amount', 'Account', 'ToAccount', 'Description', 'ProjectID', 'PurchaseID', 'CreatedAt', 'Source', 'Payee', 'SmsID'],
+  Categories:   ['ID', 'Name', 'Type', 'MonthlyBudget', 'Color'],
+  Accounts:     ['ID', 'Name', 'Type', 'OpeningBalance', 'SmsMatch'],
+  Projects:     ['ID', 'Name', 'Description', 'Budget', 'SetAside', 'StartDate', 'TargetDate', 'Priority', 'Status', 'CreatedAt'],
+  Purchases:    ['ID', 'Item', 'EstCost', 'SavedSoFar', 'Priority', 'TargetDate', 'Status', 'ProjectID', 'Notes', 'CreatedAt'],
+  Settings:     ['Key', 'Value'],
+  SmsLog:       ['ID', 'ReceivedAt', 'SmsDate', 'Sender', 'Message', 'Status', 'Note', 'Type', 'Amount', 'Fee', 'Balance', 'Payee', 'Ref', 'TxID', 'Account', 'TransactionID'],
+  Rules:        ['ID', 'Keyword', 'Category', 'CreatedAt'],
+  Budgets:      ['ID', 'Category', 'Month', 'Amount', 'CreatedAt']   // a limit applies from Month onwards until the next change
+};
+
+const UNCAT = 'Uncategorised';
+const FEE_CATEGORY = 'Bank & MoMo Charges';
+const SETUP_VERSION = '3';
+
+const TX_TYPES = ['Income', 'Expense', 'Transfer'];
+const PRIORITIES = ['High', 'Medium', 'Low'];
+const PROJECT_STATUSES = ['Planned', 'Active', 'On Hold', 'Completed', 'Cancelled'];
+const PURCHASE_STATUSES = ['Planned', 'Saving', 'Bought', 'Cancelled'];
+const ACCOUNT_TYPES = ['Cash', 'Mobile Money', 'Bank', 'Savings', 'Investment', 'Other'];
+
+/* ------------------------------------------------------------------ */
+/* Web app entry                                                       */
+/* ------------------------------------------------------------------ */
+
+function doGet(e) {
+  const gp = (e && e.parameter) || {};
+  if (gp.key && (gp.text || gp.message || gp.msg || gp.body)) return doPost(e);   // some SMS apps can only send GET
+  if (!isOwner_()) {
+    return HtmlService.createHtmlOutput('<div style="font-family:system-ui,sans-serif;max-width:440px;margin:15vh auto;padding:24px;text-align:center;color:#334155">' +
+      '<h2 style="color:#0f172a">This finance app is private</h2><p>Open it with the Google account that owns it, using your main app link.</p></div>')
+      .setTitle(APP_TITLE).addMetaTag('viewport', 'width=device-width, initial-scale=1');
+  }
+  ensureSetup_();
+  return HtmlService.createHtmlOutputFromFile('Index')
+    .setTitle(APP_TITLE)
+    .addMetaTag('viewport', 'width=device-width, initial-scale=1')
+    .setXFrameOptionsMode(HtmlService.XFrameOptionsMode.ALLOWALL);
+}
+
+/** Run once from the editor to create the sheets and starter data. */
+function setup() {
+  ensureSetup_(true);
+  Logger.log('Data sheet: ' + ss_().getUrl());
+}
+
+/** Only the script owner may use the app (the SMS endpoint uses its own secret key). */
+function isOwner_() {
+  let me = '', you = '';
+  try { me = Session.getEffectiveUser().getEmail(); } catch (e) {}
+  try { you = Session.getActiveUser().getEmail(); } catch (e) {}
+  return !!me && !!you && me.toLowerCase() === you.toLowerCase();
+}
+let API_MODE_ = false;   // true while serving a request from the paired mobile app (checked by its app key)
+function auth_() {
+  if (API_MODE_) return;
+  if (!isOwner_()) throw new Error('This finance app is private.');
+}
+
+/* ------------------------------------------------------------------ */
+/* Spreadsheet plumbing                                                */
+/* ------------------------------------------------------------------ */
+
+function ss_() {
+  const props = PropertiesService.getScriptProperties();
+  const id = props.getProperty('SPREADSHEET_ID');
+  if (id) {
+    try { return SpreadsheetApp.openById(id); }
+    catch (e) { throw new Error('Could not open the data sheet (' + id + '). If you deleted it, remove the SPREADSHEET_ID script property and reload to create a new one.'); }
+  }
+  // Script opened from inside a Google Sheet: use that sheet.
+  const active = SpreadsheetApp.getActiveSpreadsheet();
+  if (active) return active;
+  // Standalone script (created at script.google.com): create the data sheet once and remember it.
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const again = props.getProperty('SPREADSHEET_ID');
+    if (again) return SpreadsheetApp.openById(again);
+    const ss = SpreadsheetApp.create(APP_TITLE + ' – Data');
+    props.setProperty('SPREADSHEET_ID', ss.getId());
+    return ss;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function ensureSetup_(force) {
+  const props = PropertiesService.getScriptProperties();
+  if (!force && props.getProperty('SETUP_VERSION') === SETUP_VERSION) return;
+
+  const ss = ss_();
+  Object.keys(SCHEMA).forEach(function (name) {
+    let sh = ss.getSheetByName(name);
+    if (!sh) sh = ss.insertSheet(name);
+    const headers = SCHEMA[name];
+    const existing = sh.getLastRow() > 0
+      ? sh.getRange(1, 1, 1, Math.max(sh.getLastColumn(), 1)).getValues()[0].filter(String)
+      : [];
+    if (!existing.length) {
+      sh.getRange(1, 1, 1, headers.length).setValues([headers]);
+    } else {
+      const missing = headers.filter(function (h) { return existing.indexOf(h) === -1; });
+      if (missing.length) sh.getRange(1, existing.length + 1, 1, missing.length).setValues([missing]);
+    }
+    sh.getRange(1, 1, 1, sh.getLastColumn())
+      .setFontWeight('bold').setBackground('#0f766e').setFontColor('#ffffff');
+    sh.setFrozenRows(1);
+  });
+
+  seed_(ss);
+  ensureExtras_(ss);
+
+  const blank = ss.getSheetByName('Sheet1');
+  if (blank && blank.getLastRow() === 0 && ss.getSheets().length > 1) ss.deleteSheet(blank);
+
+  props.setProperty('SETUP_VERSION', SETUP_VERSION);
+}
+
+function seed_(ss) {
+  if (ss.getSheetByName('Categories').getLastRow() < 2) {
+    const income = [
+      ['Salary', '#16a34a'], ['Business / Side Income', '#22c55e'], ['Consulting & Audit Fees', '#10b981'],
+      ['Investment Returns', '#14b8a6'], ['Gifts Received', '#84cc16'], ['Other Income', '#65a30d']
+    ];
+    const expense = [
+      ['Food & Groceries', '#f97316', 1500], ['Rent & Housing', '#ef4444', 0], ['Transport & Fuel', '#eab308', 800],
+      ['Utilities (ECG, Water)', '#06b6d4', 400], ['Airtime & Data', '#3b82f6', 200], ['Tithe & Offering', '#8b5cf6', 0],
+      ['Family Support', '#ec4899', 0], ['Education & Courses', '#6366f1', 0], ['Health', '#f43f5e', 0],
+      ['Clothing & Personal Care', '#d946ef', 0], ['Entertainment & Eating Out', '#f59e0b', 300],
+      ['Subscriptions', '#0ea5e9', 0], ['Savings & Investments', '#0f766e', 0], ['Miscellaneous', '#94a3b8', 0]
+    ];
+    income.forEach(function (c) { appendObj_(ss, 'Categories', { ID: newId_('Categories'), Name: c[0], Type: 'Income', MonthlyBudget: 0, Color: c[1] }); });
+    expense.forEach(function (c) { appendObj_(ss, 'Categories', { ID: newId_('Categories'), Name: c[0], Type: 'Expense', MonthlyBudget: c[2], Color: c[1] }); });
+  }
+  if (ss.getSheetByName('Accounts').getLastRow() < 2) {
+    [['Cash', 'Cash', ''], ['Mobile Money', 'Mobile Money', 'MobileMoney, MTN MoMo'], ['Bank Account', 'Bank', '']].forEach(function (a) {
+      appendObj_(ss, 'Accounts', { ID: newId_('Accounts'), Name: a[0], Type: a[1], OpeningBalance: 0, SmsMatch: a[2] });
+    });
+  }
+  if (ss.getSheetByName('Settings').getLastRow() < 2) {
+    appendObj_(ss, 'Settings', { Key: 'CurrencySymbol', Value: 'GH₵' });
+    appendObj_(ss, 'Settings', { Key: 'OwnerName', Value: '' });
+  }
+}
+
+/** Things added in version 2 (SMS capture) – safe to run on an existing sheet. */
+function ensureExtras_(ss) {
+  const catSh = 'Categories';
+  const cats = readTable_(ss, catSh);
+  const has = function (name, type) { return cats.some(function (c) { return c.Name === name && c.Type === type; }); };
+  if (!has(UNCAT, 'Expense')) appendObj_(ss, catSh, { ID: newId_(catSh), Name: UNCAT, Type: 'Expense', MonthlyBudget: 0, Color: '#94a3b8' });
+  if (!has(UNCAT, 'Income')) appendObj_(ss, catSh, { ID: newId_(catSh), Name: UNCAT, Type: 'Income', MonthlyBudget: 0, Color: '#94a3b8' });
+  if (!has(FEE_CATEGORY, 'Expense')) appendObj_(ss, catSh, { ID: newId_(catSh), Name: FEE_CATEGORY, Type: 'Expense', MonthlyBudget: 0, Color: '#64748b' });
+
+  if (!getSetting_('SmsKey', ss)) setSetting_('SmsKey', newKey_(), ss);
+  if (!getSetting_('AppKey', ss)) setSetting_('AppKey', newKey_() + newKey_().slice(0, 8), ss);
+
+  const accs = readTable_(ss, 'Accounts');
+  if (!accs.some(function (a) { return str_(a.SmsMatch); })) {
+    const momo = accs.filter(function (a) { return a.Type === 'Mobile Money'; })[0];
+    if (momo) setCell_(ss, 'Accounts', momo.ID, 'SmsMatch', 'MobileMoney, MTN MoMo');
+  }
+
+  if (!getSetting_('RulesSeeded', ss)) {
+    const names = readTable_(ss, catSh).map(function (c) { return c.Name; });
+    [['ECG', 'Utilities (ECG, Water)'], ['Ghana Water', 'Utilities (ECG, Water)'], ['GWCL', 'Utilities (ECG, Water)'],
+     ['airtime', 'Airtime & Data'], ['bundle', 'Airtime & Data'],
+     ['GOIL', 'Transport & Fuel'], ['Shell', 'Transport & Fuel'], ['Star Oil', 'Transport & Fuel'], ['TotalEnergies', 'Transport & Fuel'],
+     ['Uber', 'Transport & Fuel'], ['Bolt', 'Transport & Fuel'], ['Yango', 'Transport & Fuel'],
+     ['Melcom', 'Food & Groceries'], ['Shoprite', 'Food & Groceries'], ['Palace Hypermarket', 'Food & Groceries'],
+     ['Netflix', 'Subscriptions'], ['Spotify', 'Subscriptions'], ['DStv', 'Subscriptions'], ['GOtv', 'Subscriptions'],
+     ['salary', 'Salary'], ['interest', 'Investment Returns']
+    ].forEach(function (r) {
+      if (names.indexOf(r[1]) > -1) appendObj_(ss, 'Rules', { ID: newId_('Rules'), Keyword: r[0], Category: r[1], CreatedAt: new Date() });
+    });
+    setSetting_('RulesSeeded', 'yes', ss);
+  }
+}
+
+function newKey_() {
+  return Utilities.getUuid().replace(/-/g, '').slice(0, 24);
+}
+
+function getSetting_(key, ss) {
+  const rows = readTable_(ss || ss_(), 'Settings').filter(function (r) { return r.Key === key; });
+  return rows.length ? str_(rows[0].Value) : '';
+}
+
+function setSetting_(key, value, ss) {
+  const sh = (ss || ss_()).getSheetByName('Settings');
+  const n = sh.getLastRow();
+  const keys = n > 1 ? sh.getRange(2, 1, n - 1, 1).getValues() : [];
+  for (let i = 0; i < keys.length; i++) {
+    if (keys[i][0] === key) { sh.getRange(i + 2, 2).setValue(value); return; }
+  }
+  sh.appendRow([key, value]);
+}
+
+/** Set one cell of a row found by ID (no lock – callers hold it or run single-threaded). */
+function setCell_(ss, name, id, column, value) {
+  const sh = ss.getSheetByName(name);
+  const row = findRow_(sh, id);
+  const col = headers_(sh).indexOf(column) + 1;
+  if (row > -1 && col > 0) sh.getRange(row, col).setValue(value);
+}
+
+/** Store text so Sheets never turns it into a number, date or formula. */
+function txt_(v) {
+  const s = str_(v);
+  return s ? "'" + s : '';
+}
+
+function headers_(sh) {
+  return sh.getRange(1, 1, 1, sh.getLastColumn()).getValues()[0].map(String);
+}
+
+function appendObj_(ss, name, obj) {
+  const sh = ss.getSheetByName(name);
+  const h = headers_(sh);
+  sh.appendRow(h.map(function (k) { return obj[k] === undefined ? '' : obj[k]; }));
+}
+
+function newId_(name) {
+  const prefix = { Transactions: 'TX', Categories: 'CAT', Accounts: 'ACC', Projects: 'PRJ', Purchases: 'PUR', SmsLog: 'SMS', Rules: 'RUL', Budgets: 'BUD' }[name] || 'ID';
+  return prefix + '-' + Date.now().toString(36).toUpperCase() + Math.floor(Math.random() * 46656).toString(36).toUpperCase();
+}
+
+function readTable_(ss, name) {
+  const sh = ss.getSheetByName(name);
+  if (!sh || sh.getLastRow() < 2) return [];
+  const tz = ss.getSpreadsheetTimeZone();
+  const values = sh.getRange(1, 1, sh.getLastRow(), sh.getLastColumn()).getValues();
+  const h = values.shift().map(String);
+  return values
+    .filter(function (r) { return r[0] !== '' && r[0] !== null; })
+    .map(function (r) {
+      const o = {};
+      h.forEach(function (k, i) {
+        if (!k) return;
+        o[k] = r[i] instanceof Date ? Utilities.formatDate(r[i], tz, 'yyyy-MM-dd') : r[i];
+      });
+      return o;
+    });
+}
+
+function findRow_(sh, id) {
+  if (sh.getLastRow() < 2) return -1;
+  const idCol = headers_(sh).indexOf('ID') + 1;
+  const ids = sh.getRange(2, idCol, sh.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < ids.length; i++) if (String(ids[i][0]) === String(id)) return i + 2;
+  return -1;
+}
+
+function getById_(name, id) {
+  const rows = readTable_(ss_(), name).filter(function (r) { return String(r.ID) === String(id); });
+  return rows.length ? rows[0] : null;
+}
+
+/** Insert or update by ID. Fields left undefined keep their current value. */
+function upsert_(name, obj) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const sh = ss_().getSheetByName(name);
+    const h = headers_(sh);
+    const row = obj.ID ? findRow_(sh, obj.ID) : -1;
+    if (row > -1) {
+      const cur = sh.getRange(row, 1, 1, h.length).getValues()[0];
+      sh.getRange(row, 1, 1, h.length).setValues([h.map(function (k, i) { return obj[k] === undefined ? cur[i] : obj[k]; })]);
+    } else {
+      obj.ID = obj.ID || newId_(name);
+      if (h.indexOf('CreatedAt') > -1 && !obj.CreatedAt) obj.CreatedAt = new Date();
+      sh.appendRow(h.map(function (k) { return obj[k] === undefined ? '' : obj[k]; }));
+    }
+    return obj.ID;
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+function deleteById_(name, id) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const sh = ss_().getSheetByName(name);
+    const row = findRow_(sh, id);
+    if (row > -1) sh.deleteRow(row);
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Replace a value throughout one column (used for renames and unlinking). */
+function replaceInColumn_(name, column, oldVal, newVal) {
+  const sh = ss_().getSheetByName(name);
+  if (sh.getLastRow() < 2) return;
+  const col = headers_(sh).indexOf(column) + 1;
+  if (col < 1) return;
+  const rng = sh.getRange(2, col, sh.getLastRow() - 1, 1);
+  const vals = rng.getValues();
+  let changed = false;
+  vals.forEach(function (r) { if (String(r[0]) === String(oldVal)) { r[0] = newVal; changed = true; } });
+  if (changed) rng.setValues(vals);
+}
+
+/* ------------------------------------------------------------------ */
+/* Validation helpers                                                  */
+/* ------------------------------------------------------------------ */
+
+function str_(v) { return v === null || v === undefined ? '' : String(v).trim(); }
+
+function num_(v, label, opts) {
+  opts = opts || {};
+  const s = str_(v).replace(/,/g, '');
+  if (s === '') {
+    if (opts.optional) return 0;
+    throw new Error(label + ' is required.');
+  }
+  const n = Number(s);
+  if (isNaN(n)) throw new Error(label + ' must be a number.');
+  if (opts.positive && n <= 0) throw new Error(label + ' must be greater than zero.');
+  if (opts.min !== undefined && n < opts.min) throw new Error(label + ' cannot be less than ' + opts.min + '.');
+  return Math.round(n * 100) / 100;
+}
+
+function date_(v, label, optional) {
+  const s = str_(v);
+  if (!s) {
+    if (optional) return '';
+    throw new Error(label + ' is required.');
+  }
+  if (!/^\d{4}-\d{2}-\d{2}$/.test(s)) throw new Error(label + ' must be a valid date.');
+  return s;
+}
+
+function oneOf_(v, list, label, fallback) {
+  const s = str_(v) || fallback;
+  if (list.indexOf(s) === -1) throw new Error(label + ' must be one of: ' + list.join(', '));
+  return s;
+}
+
+/* ------------------------------------------------------------------ */
+/* API used by the web app (each write returns fresh data)             */
+/* ------------------------------------------------------------------ */
+
+function getData() {
+  auth_();
+  ensureSetup_();
+  const ss = ss_();
+  const out = {};
+  Object.keys(SCHEMA).forEach(function (n) { out[n] = readTable_(ss, n); });
+  const settings = {};
+  out.Settings.forEach(function (r) { settings[r.Key] = r.Value; });
+  out.Settings = settings;
+  out.SmsLog = out.SmsLog.sort(function (a, b) { return Number(b.ReceivedAt) - Number(a.ReceivedAt); }).slice(0, 300);
+  out.smsKey = settings.SmsKey || '';
+  try { out.lastPost = JSON.parse(PropertiesService.getScriptProperties().getProperty('LastPost') || 'null'); } catch (e) { out.lastPost = null; }
+  try { out.appUrl = ScriptApp.getService().getUrl(); } catch (e) { out.appUrl = ''; }
+  out.today = Utilities.formatDate(new Date(), ss.getSpreadsheetTimeZone(), 'yyyy-MM-dd');
+  out.sheetUrl = ss.getUrl();
+  try { out.user = Session.getEffectiveUser().getEmail(); } catch (e) { out.user = ''; }
+  return out;
+}
+
+/* Transactions ------------------------------------------------------ */
+
+function saveTransaction(t) {
+  auth_();
+  txUpsert_(t);
+  return getData();
+}
+
+/** Validate and save one transaction; returns its ID. */
+function txUpsert_(t) {
+  const type = oneOf_(t.Type, TX_TYPES, 'Type');
+  const accounts = readTable_(ss_(), 'Accounts').map(function (a) { return a.Name; });
+  const account = str_(t.Account);
+  if (accounts.indexOf(account) === -1) throw new Error('Choose a valid account.');
+
+  const rec = {
+    ID: str_(t.ID) || undefined,
+    Date: date_(t.Date, 'Date'),
+    Type: type,
+    Amount: num_(t.Amount, 'Amount', { positive: true }),
+    Account: account,
+    Description: str_(t.Description),
+    ProjectID: str_(t.ProjectID),
+    PurchaseID: t.PurchaseID === undefined ? undefined : str_(t.PurchaseID),
+    Source: t.Source === undefined ? undefined : str_(t.Source),
+    Payee: t.Payee === undefined ? undefined : txt_(t.Payee),
+    SmsID: t.SmsID === undefined ? undefined : str_(t.SmsID)
+  };
+
+  if (type === 'Transfer') {
+    const to = str_(t.ToAccount);
+    if (accounts.indexOf(to) === -1) throw new Error('Choose the account you are transferring to.');
+    if (to === account) throw new Error('Transfer accounts must be different.');
+    rec.ToAccount = to;
+    rec.Category = 'Transfer';
+    rec.ProjectID = '';
+  } else {
+    rec.ToAccount = '';
+    rec.Category = str_(t.Category);
+    if (!rec.Category) throw new Error('Category is required.');
+  }
+  return upsert_('Transactions', rec);
+}
+
+function deleteTransaction(id) {
+  auth_();
+  deleteById_('Transactions', id);
+  return getData();
+}
+
+/* Categories -------------------------------------------------------- */
+
+function saveCategory(c) {
+  auth_();
+  const name = str_(c.Name);
+  if (!name) throw new Error('Category name is required.');
+  const type = oneOf_(c.Type, ['Income', 'Expense'], 'Type');
+  const all = readTable_(ss_(), 'Categories');
+  const dup = all.some(function (x) { return x.Name === name && x.Type === type && String(x.ID) !== str_(c.ID); });
+  if (dup) throw new Error('A ' + type.toLowerCase() + ' category called "' + name + '" already exists.');
+
+  if (c.ID) {
+    const old = all.filter(function (x) { return String(x.ID) === str_(c.ID); })[0];
+    if (old && old.Name !== name) {
+      replaceInColumn_('Transactions', 'Category', old.Name, name);
+      replaceInColumn_('Budgets', 'Category', old.Name, name);
+      replaceInColumn_('Rules', 'Category', old.Name, name);
+    }
+  }
+  // MonthlyBudget is the starting limit (used for months before any change made on the Budgets page).
+  // When editing a category it is left alone so past months are never changed.
+  upsert_('Categories', {
+    ID: str_(c.ID) || undefined,
+    Name: name,
+    Type: type,
+    MonthlyBudget: c.MonthlyBudget === undefined && c.ID ? undefined : num_(c.MonthlyBudget, 'Monthly budget', { optional: true, min: 0 }),
+    Color: str_(c.Color) || '#94a3b8'
+  });
+  return getData();
+}
+
+/**
+ * Set a category's monthly limit from `month` (yyyy-MM) onwards. Earlier months keep their limit;
+ * the new limit carries forward until the next change.
+ */
+function setBudget(category, month, amount) {
+  auth_();
+  const ss = ss_();
+  const name = str_(category), ym = str_(month);
+  if (!readTable_(ss, 'Categories').some(function (c) { return c.Name === name && c.Type === 'Expense'; })) throw new Error('Category not found.');
+  if (!/^\d{4}-\d{2}$/.test(ym)) throw new Error('Choose a month.');
+  const amt = num_(amount, 'Monthly limit', { min: 0 });
+  const existing = readTable_(ss, 'Budgets').filter(function (b) { return b.Category === name && String(b.Month) === ym; })[0];
+  upsert_('Budgets', { ID: existing ? existing.ID : undefined, Category: name, Month: txt_(ym), Amount: amt });
+  return getData();
+}
+
+function deleteCategory(id) {
+  auth_();
+  deleteById_('Categories', id);
+  return getData();
+}
+
+/* Accounts ---------------------------------------------------------- */
+
+function saveAccount(a) {
+  auth_();
+  const name = str_(a.Name);
+  if (!name) throw new Error('Account name is required.');
+  const all = readTable_(ss_(), 'Accounts');
+  if (all.some(function (x) { return x.Name === name && String(x.ID) !== str_(a.ID); })) {
+    throw new Error('An account called "' + name + '" already exists.');
+  }
+  if (a.ID) {
+    const old = all.filter(function (x) { return String(x.ID) === str_(a.ID); })[0];
+    if (old && old.Name !== name) {
+      replaceInColumn_('Transactions', 'Account', old.Name, name);
+      replaceInColumn_('Transactions', 'ToAccount', old.Name, name);
+    }
+  }
+  upsert_('Accounts', {
+    ID: str_(a.ID) || undefined,
+    Name: name,
+    Type: oneOf_(a.Type, ACCOUNT_TYPES, 'Account type', 'Other'),
+    OpeningBalance: num_(a.OpeningBalance, 'Opening balance', { optional: true }),
+    SmsMatch: str_(a.SmsMatch)
+  });
+  return getData();
+}
+
+function deleteAccount(id) {
+  auth_();
+  const acc = getById_('Accounts', id);
+  if (!acc) return getData();
+  const used = readTable_(ss_(), 'Transactions').some(function (t) { return t.Account === acc.Name || t.ToAccount === acc.Name; });
+  if (used) throw new Error('"' + acc.Name + '" has transactions. Move or delete them first, or rename the account instead.');
+  deleteById_('Accounts', id);
+  return getData();
+}
+
+/* Projects ---------------------------------------------------------- */
+
+function saveProject(p) {
+  auth_();
+  const name = str_(p.Name);
+  if (!name) throw new Error('Project name is required.');
+  upsert_('Projects', {
+    ID: str_(p.ID) || undefined,
+    Name: name,
+    Description: str_(p.Description),
+    Budget: num_(p.Budget, 'Budget', { optional: true, min: 0 }),
+    SetAside: num_(p.SetAside, 'Amount saved', { optional: true, min: 0 }),
+    StartDate: date_(p.StartDate, 'Start date', true),
+    TargetDate: date_(p.TargetDate, 'Target date', true),
+    Priority: oneOf_(p.Priority, PRIORITIES, 'Priority', 'Medium'),
+    Status: oneOf_(p.Status, PROJECT_STATUSES, 'Status', 'Planned')
+  });
+  return getData();
+}
+
+/** Add (or withdraw, with a negative amount) money saved toward a project. */
+function fundProject(id, amount) {
+  auth_();
+  const p = getById_('Projects', id);
+  if (!p) throw new Error('Project not found.');
+  const a = num_(amount, 'Amount');
+  if (a === 0) throw new Error('Enter an amount.');
+  const next = Math.round((Number(p.SetAside || 0) + a) * 100) / 100;
+  if (next < 0) throw new Error('You cannot withdraw more than has been saved.');
+  upsert_('Projects', { ID: id, SetAside: next, Status: p.Status === 'Planned' ? 'Active' : p.Status });
+  return getData();
+}
+
+function deleteProject(id) {
+  auth_();
+  deleteById_('Projects', id);
+  replaceInColumn_('Purchases', 'ProjectID', id, '');
+  replaceInColumn_('Transactions', 'ProjectID', id, '');
+  return getData();
+}
+
+/* Planned purchases ------------------------------------------------- */
+
+function savePurchase(p) {
+  auth_();
+  const item = str_(p.Item);
+  if (!item) throw new Error('Item name is required.');
+  upsert_('Purchases', {
+    ID: str_(p.ID) || undefined,
+    Item: item,
+    EstCost: num_(p.EstCost, 'Estimated cost', { min: 0 }),
+    SavedSoFar: num_(p.SavedSoFar, 'Saved so far', { optional: true, min: 0 }),
+    Priority: oneOf_(p.Priority, PRIORITIES, 'Priority', 'Medium'),
+    TargetDate: date_(p.TargetDate, 'Target date', true),
+    Status: oneOf_(p.Status, PURCHASE_STATUSES, 'Status', 'Planned'),
+    ProjectID: str_(p.ProjectID),
+    Notes: str_(p.Notes)
+  });
+  return getData();
+}
+
+function fundPurchase(id, amount) {
+  auth_();
+  const p = getById_('Purchases', id);
+  if (!p) throw new Error('Purchase not found.');
+  const a = num_(amount, 'Amount');
+  if (a === 0) throw new Error('Enter an amount.');
+  const next = Math.round((Number(p.SavedSoFar || 0) + a) * 100) / 100;
+  if (next < 0) throw new Error('You cannot withdraw more than has been saved.');
+  upsert_('Purchases', { ID: id, SavedSoFar: next, Status: p.Status === 'Planned' ? 'Saving' : p.Status });
+  return getData();
+}
+
+/** Mark a planned purchase as bought and record the real expense. */
+function markPurchaseBought(id, d) {
+  auth_();
+  const p = getById_('Purchases', id);
+  if (!p) throw new Error('Purchase not found.');
+  txUpsert_({
+    Date: d.Date,
+    Type: 'Expense',
+    Category: d.Category,
+    Amount: d.Amount,
+    Account: d.Account,
+    Description: 'Purchase: ' + p.Item,
+    ProjectID: p.ProjectID || '',
+    PurchaseID: p.ID
+  });
+  upsert_('Purchases', { ID: id, Status: 'Bought' });
+  return getData();
+}
+
+function deletePurchase(id) {
+  auth_();
+  deleteById_('Purchases', id);
+  replaceInColumn_('Transactions', 'PurchaseID', id, '');
+  return getData();
+}
+
+/* Settings ---------------------------------------------------------- */
+
+function saveSettings(obj) {
+  auth_();
+  const lock = LockService.getScriptLock();
+  lock.waitLock(20000);
+  try {
+    const sh = ss_().getSheetByName('Settings');
+    const rows = sh.getLastRow() > 1 ? sh.getRange(2, 1, sh.getLastRow() - 1, 2).getValues() : [];
+    Object.keys(obj).forEach(function (k) {
+      const v = str_(obj[k]);
+      const i = rows.findIndex(function (r) { return r[0] === k; });
+      if (i > -1) sh.getRange(i + 2, 2).setValue(v);
+      else sh.appendRow([k, v]);
+    });
+  } finally {
+    lock.releaseLock();
+  }
+  return getData();
+}
+
+/* ================================================================== */
+/* SMS CAPTURE                                                         */
+/* ================================================================== */
+
+/**
+ * Your phone's SMS-forwarding app POSTs here:
+ *   <web app URL>?key=YOUR_KEY   with JSON {"from":"...","text":"..."}
+ * Form fields or a plain-text body also work. The key is shown in the app's SMS Inbox.
+ */
+function doPost(e) {
+  let out, info = null;
+  try {
+    ensureSetup_();
+    const p = (e && e.parameter) || {};
+    const raw = e && e.postData ? String(e.postData.contents || '') : '';
+    const body = lenientJson_(raw);
+    if (body.action) return api_(body);   // request from the mobile app
+    const pick = function (keys) {
+      for (let i = 0; i < keys.length; i++) {
+        const srcs = [body, p];
+        for (let j = 0; j < srcs.length; j++) {
+          const v = srcs[j][keys[i]];
+          if (v !== undefined && v !== null && String(v).trim() !== '') return String(v);
+        }
+      }
+      return '';
+    };
+    const key = pick(['key']);
+    let text = pick(['text', 'message', 'msg', 'body', 'content', 'sms']);
+    if (!text && raw && !Object.keys(body).length && raw.indexOf('=') === -1) text = raw;   // plain-text body
+    const sender = pick(['from', 'sender', 'address', 'phone', 'number', 'title']);
+    info = { fields: Object.keys(body).concat(Object.keys(p)).filter(function (k, i, a) { return a.indexOf(k) === i; }),
+      method: e && e.postData ? 'POST' : 'GET', sender: sender.slice(0, 40), sample: (text || raw).slice(0, 160) };
+    if (!key) {
+      out = { ok: false, error: 'No key in the address – add ?key=… to the URL' };
+    } else if (key !== getSetting_('SmsKey')) {
+      out = { ok: false, error: 'Wrong key – copy the forwarding address again from Phone setup' };
+    } else if (!text) {
+      out = { ok: false, error: 'No message text – the request body needs a "text" field with the SMS' };
+    } else {
+      const when = pick(['sentStamp', 'receivedStamp', 'timestamp', 'time', 'date']);
+      out = ingestSms_(sender, text, when);
+    }
+  } catch (err) {
+    out = { ok: false, error: String((err && err.message) || err) };
+  }
+  try {
+    PropertiesService.getScriptProperties().setProperty('LastPost', JSON.stringify(Object.assign({ at: Date.now() }, info || {}, out)).slice(0, 8000));
+  } catch (x) {}
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/**
+ * Parse a forwarder's JSON body even when it is slightly broken: curly “smart” quotes from a phone
+ * keyboard, or an SMS with quotes / line breaks pasted into the template without escaping.
+ */
+function lenientJson_(raw) {
+  raw = String(raw || '').trim();
+  if (!raw || raw.charAt(0) !== '{') return {};
+  try { const j = JSON.parse(raw); return j && typeof j === 'object' ? j : {}; } catch (e) {}
+  const fixed = raw.replace(/[\u201C\u201D\u201E\u201F\u2033\u2036]/g, '"').replace(/[\u2018\u2019]/g, "'");
+  try { const j = JSON.parse(fixed.replace(/\r?\n/g, ' ')); return j && typeof j === 'object' ? j : {}; } catch (e) {}
+  // Last resort: pull "name":"value" pairs out by hand. The final value may contain stray quotes.
+  const out = {};
+  const keys = [];
+  const re = /"([A-Za-z_][\w]*)"\s*:\s*"/g;
+  let m;
+  while ((m = re.exec(fixed))) keys.push({ k: m[1], start: re.lastIndex, at: m.index });
+  keys.forEach(function (k, i) {
+    const end = i + 1 < keys.length ? keys[i + 1].at : fixed.length;
+    out[k.k] = fixed.slice(k.start, end).replace(/"\s*,?\s*}?\s*$/, '').replace(/\s+/g, ' ').trim();
+  });
+  return out;
+}
+
+/** Read, de-duplicate, record and log one SMS. */
+function ingestSms_(sender, text, when) {
+  const lock = LockService.getScriptLock();
+  lock.waitLock(25000);
+  try {
+    const ss = ss_();
+    const fw = splitForwarded_(text);
+    text = fw.text;
+    sender = str_(sender) || fw.sender;
+    const p = parseSms_(text);
+    let date = smsDate_(when, ss);
+    if (p.date) {   // prefer the date written in the SMS when it is sensible (not in the future, within a year)
+      const d = new Date(p.date + 'T12:00:00'), now = new Date();
+      if (!isNaN(d.getTime()) && d <= new Date(now.getTime() + 864e5) && d > new Date(now.getTime() - 366 * 864e5)) date = p.date;
+    }
+    const logs = readTable_(ss, 'SmsLog');
+    const dupe = logs.some(function (l) {
+      return (p.txId && String(l.TxID) === p.txId) || String(l.Message) === text;
+    });
+    const log = {
+      ID: newId_('SmsLog'), ReceivedAt: Date.now(), SmsDate: date, Sender: txt_(sender), Message: txt_(text),
+      Status: '', Note: '', Type: p.type, Amount: p.amount || '', Fee: p.fee || '',
+      Balance: p.balance === null ? '' : p.balance, Payee: txt_(p.payee), Ref: txt_(p.ref), TxID: txt_(p.txId),
+      Account: '', TransactionID: ''
+    };
+    if (dupe) {
+      log.Status = 'Duplicate'; log.Note = 'Already received';
+    } else if (p.skip) {
+      log.Status = 'Ignored'; log.Note = p.skip;
+    } else if (!p.amount || !p.type) {
+      log.Status = 'Review'; log.Note = 'Could not tell the amount or whether money came in or went out';
+    } else {
+      const acc = matchAccount_(ss, sender, text, p.payee);
+      log.Account = acc;
+      if (!acc) {
+        log.Status = 'Review'; log.Note = 'No account matches this sender – add it to an account\'s "SMS match"';
+      } else {
+        log.TransactionID = recordParsed_(ss, p, acc, date, log.ID, text);
+        log.Status = 'Recorded';
+      }
+    }
+    appendObj_(ss, 'SmsLog', log);
+    return { ok: true, status: log.Status, type: p.type, amount: p.amount, account: log.Account, note: log.Note };
+  } finally {
+    lock.releaseLock();
+  }
+}
+
+/** Create the transaction (plus a charges line if there was a fee). */
+function recordParsed_(ss, p, account, date, smsId, text) {
+  const base = {
+    Date: date, Account: account, ProjectID: '', PurchaseID: '', CreatedAt: new Date(),
+    Source: 'SMS', Payee: txt_(p.payee), SmsID: smsId, ToAccount: ''
+  };
+  const cash = readTable_(ss, 'Accounts').filter(function (a) { return a.Type === 'Cash' && a.Name !== account; })[0];
+  let rec;
+  if (p.kind === 'cashout' && cash) {
+    rec = Object.assign({}, base, { ID: newId_('Transactions'), Type: 'Transfer', Category: 'Transfer', Amount: p.amount,
+      ToAccount: cash.Name, Description: txt_('Cash withdrawal' + (p.payee ? ' – ' + p.payee : '')) });
+  } else {
+    rec = Object.assign({}, base, { ID: newId_('Transactions'), Type: p.type, Amount: p.amount,
+      Category: ruleCategory_(ss, p.type, [p.payee, p.ref, text].join(' ')) || UNCAT,
+      Description: txt_(p.payee || p.ref || (/\bcard\b/i.test(text) ? (p.type === 'Income' ? 'Card top-up' : 'Card payment') : (p.type === 'Income' ? 'Money received' : 'Payment'))) });
+  }
+  appendObj_(ss, 'Transactions', rec);
+  if (p.fee > 0) {
+    appendObj_(ss, 'Transactions', Object.assign({}, base, { ID: newId_('Transactions'), Type: 'Expense', Category: FEE_CATEGORY,
+      Amount: p.fee, Payee: '', Description: txt_('Charges' + (p.payee ? ' – ' + p.payee : '')) }));
+  }
+  return rec.ID;
+}
+
+/**
+ * Which account does this SMS belong to? Uses each account's comma-separated "SMS match" words.
+ * Scoring: sender name match = 2, account/card number in the text = 3, other word in the text = 2.
+ * On a tie the text wins, because it is more specific (e.g. a GCB prepaid-card SMS sent by "GCB Bank"
+ * belongs to the card, not the GCB current account). Words inside the payee ("from GCB BANK",
+ * "TRF TO MTN MOMO") are ignored so the other party never decides the account.
+ */
+function matchAccount_(ss, sender, text, payee) {
+  const s = String(sender || '').toLowerCase();
+  let t = String(text || '').toLowerCase();
+  const pay = String(payee || '').toLowerCase().trim();
+  if (pay.length >= 3) t = t.split(pay).join(' ');
+  const all = readTable_(ss, 'Accounts');
+  const momoAcc = function () {
+    const m = all.filter(function (a) { return a.Type === 'Mobile Money'; });
+    return m.length === 1 ? m[0].Name : '';
+  };
+  // MTN MoMo messages carry tell-tale wording
+  if (/mtnmymomo|download the momo app|financial transaction id|\bmomo app\b/i.test(t) && momoAcc()) return momoAcc();
+
+  let best = '', bestTotal = 0, bestText = 0;
+  all.forEach(function (a) {
+    const words = String(a.SmsMatch || '').split(',').map(function (w) { return w.trim().toLowerCase(); }).filter(String);
+    let bySender = 0, byText = 0;
+    words.forEach(function (w) {
+      if (s && (s.indexOf(w) > -1 || (w.indexOf(s) > -1 && s.length >= 3))) bySender = 2;
+      if (/^\d{3,}$/.test(w)) { if (new RegExp('(^|\\D)' + w + '(\\D|$)').test(t)) byText = Math.max(byText, 3); }   // also inside XXXX4521
+      else if (w.length >= 3 && wordIn_(w, t)) byText = Math.max(byText, 2);
+    });
+    const total = bySender + byText;
+    if (total > bestTotal || (total === bestTotal && total > 0 && byText > bestText)) { best = a.Name; bestTotal = total; bestText = byText; }
+  });
+  if (best) return best;
+  if (/\bmomo\b|mobile money|\btransaction id\b.*\bcurrent balance\b|\bcurrent balance\b.*\btransaction id\b/i.test(t) && momoAcc()) return momoAcc();
+  return '';
+}
+
+/**
+ * Some forwarders put the sender inside the message, e.g. "From : GCB Bank() Dear JOHN…"
+ * or "Recipient: 0551234567 …". Split that off so the log shows the sender and a clean message.
+ */
+function splitForwarded_(text) {
+  let t = String(text || '').replace(/\s+/g, ' ').trim(), sender = '';
+  let m = t.match(/^from\s*:\s*(.*?)\s*\(([^)]*)\)\s*/i);
+  if (m) { sender = (m[1] || m[2] || '').trim(); t = t.slice(m[0].length); }
+  else if ((m = t.match(/^(?:from|sender)\s*:\s*([A-Za-z0-9 .&'\-]{2,30}?)\s*[\-–:|]\s+/i))) { sender = m[1].trim(); t = t.slice(m[0].length); }
+  else if ((m = t.match(/^recipient\s*:\s*\+?[\d ]{6,}\s*/i))) { t = t.slice(m[0].length); }
+  return { sender: sender, text: t.trim() };
+}
+
+function wordIn_(word, haystack) {
+  const w = word.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  return new RegExp('(^|[^a-z0-9])' + w + '([^a-z0-9]|$)', 'i').test(haystack);
+}
+
+/** First matching rule (longest keyword wins) whose category fits the transaction type. */
+function ruleCategory_(ss, type, haystack) {
+  const cats = readTable_(ss, 'Categories').filter(function (c) { return c.Type === type; }).map(function (c) { return c.Name; });
+  const rules = readTable_(ss, 'Rules').filter(function (r) { return str_(r.Keyword) && cats.indexOf(r.Category) > -1; })
+    .sort(function (a, b) { return String(b.Keyword).length - String(a.Keyword).length; });
+  for (let i = 0; i < rules.length; i++) if (wordIn_(String(rules[i].Keyword).toLowerCase(), haystack)) return rules[i].Category;
+  return '';
+}
+
+function smsDate_(when, ss) {
+  let d = null;
+  const w = str_(when);
+  if (/^\d{10,13}$/.test(w)) d = new Date(w.length === 13 ? Number(w) : Number(w) * 1000);
+  else if (w) { const t = Date.parse(w); if (!isNaN(t)) d = new Date(t); }
+  if (!d || isNaN(d.getTime())) d = new Date();
+  return Utilities.formatDate(d, ss.getSpreadsheetTimeZone(), 'yyyy-MM-dd');
+}
+
+/**
+ * Pull the useful parts out of a MoMo or bank SMS.
+ * Returns { type: 'Income'|'Expense'|'', kind, amount, fee, balance, payee, ref, txId, skip }
+ */
+function parseSms_(text) {
+  const t = String(text || '').replace(/\s+/g, ' ').trim();
+  const r = { type: '', kind: '', amount: 0, fee: 0, balance: null, payee: '', ref: '', txId: '', date: '', skip: '' };
+  if (/\b(otp|one[- ]?time (pin|password|code)|verification code|security code|do not share)\b/i.test(t)) { r.skip = 'Security code message'; return r; }
+  if (/\b(failed|unsuccessful|was declined|has been declined|not successful|insufficient (funds|balance))\b/i.test(t)) { r.skip = 'Failed or declined transaction'; return r; }
+
+  // every money amount, with the words just before it
+  const CUR = '(?:GHS|GH¢|GH₵|GHC|GH\\s?C|\\bGH\\b|₵|¢|ghana\\s+cedis?|\\bcedis?\\b)';
+  const re = new RegExp(CUR + '\\s*:?\\s*([\\d,]*\\d(?:\\.\\d{1,2})?)|([\\d,]*\\d\\.\\d{2})\\s*' + CUR +
+    '|\\b(?:amt|amount)(?:\\s+of)?\\s*[:=]?\\s*([\\d,]*\\d(?:\\.\\d{1,2})?)|\\b(?:fee|tax|e-?levy|levy|charges?)\\b[a-z ]*[:=]\\s*([\\d,]*\\d\\.\\d{1,2})', 'gi');
+  const am = [];
+  let m;
+  while ((m = re.exec(t))) {
+    const raw = m[1] || m[2] || m[3] || m[4];
+    const v = parseFloat(String(raw).replace(/,/g, ''));
+    if (!isNaN(v)) am.push({ v: Math.abs(v), i: m.index, ctx: (t.slice(Math.max(0, m.index - 40), m.index) + (m[4] ? m[0] : '')).toLowerCase() });
+  }
+  if (!am.length) { r.skip = 'No amount in message'; return r; }
+  const isBal = function (c) { return /\bbal(ance)?\b[^.]{0,18}$|\bbal\.?\s*[:=]?\s*$/.test(c); };
+  const isFee = function (c) { return /\b(fee|charges?|charged|commission|tax|e-?levy|levy)\b[^.]{0,18}$/.test(c) || /\b(fee|tax|levy|charges?)\b/.test(c.slice(-22)); };
+  const main = am.filter(function (a) { return !isBal(a.ctx) && !isFee(a.ctx); })[0];
+  const bals = am.filter(function (a) { return isBal(a.ctx); });
+  const avail = bals.filter(function (a) { return /avail/.test(a.ctx); })[0];
+  r.balance = avail ? avail.v : (bals[0] ? bals[0].v : null);
+  const seen = {};
+  am.filter(function (a) { return a !== main && !isBal(a.ctx) && isFee(a.ctx); }).forEach(function (a) {
+    const k = a.i + ':' + a.v; if (!seen[k]) { seen[k] = 1; r.fee += a.v; }
+  });
+  r.fee = Math.round(r.fee * 100) / 100;
+  if (!main) return r;
+  r.amount = main.v;
+
+  // money in or out? whichever kind of keyword appears first wins
+  const IN = [/payment received/i, /\byou have received\b/i, /\breceived\b/i, /\bcredit(ed)?\b/i, /\bcr\b/i, /\bcash ?in\b/i,
+    /\bdeposit(ed)?\b/i, /\btransfer(red)? from\b/i, /\brevers(al|ed)\b/i, /\brefund(ed)?\b/i, /\binflow\b/i];
+  const OUT = [/payment made/i, /\bpayment (for|of|to)\b/i, /\byou have paid\b/i, /\bpaid\b/i, /\bdebit(ed)?\b/i, /\bdr\b/i,
+    /\bcash ?out\b/i, /\bwithdraw(al|n)?\b/i, /\bpurchase[sd]?\b/i, /\bsent\b/i, /\btransfer(red)? to\b/i, /\bbill pay/i,
+    /\bairtime\b/i, /\bpos\b/i, /\bspent\b/i, /\bbought\b/i];
+  const first = function (list) {
+    let best = Infinity;
+    list.forEach(function (rx) { const x = t.search(rx); if (x > -1 && x < best) best = x; });
+    return best;
+  };
+  const iIn = first(IN), iOut = first(OUT);
+  if (iIn === Infinity && iOut === Infinity) return r;
+  r.type = iIn < iOut ? 'Income' : 'Expense';
+  if (r.type === 'Expense' && /\bcash ?out\b|\bwithdraw(al|n)?\b|\batm\b/i.test(t)) r.kind = 'cashout';
+
+  // who with
+  const desc = t.match(/\b(?:desc(?:ription)?|narration|narr|details|remarks?|merchant|purpose)\s*[:\-]\s*([^;]{2,60}?)(?=\s*(?:[.;]\s|[.;]?$|\s(?:avail|bal|ref|on|date|trans)\b))/i);
+  const dir = r.type === 'Income' ? 'from' : 'to';
+  const who = t.match(new RegExp('\\b' + dir + '\\s+([A-Za-z0-9][A-Za-z0-9 .&\'/\\-]{1,50}?)(?=\\s*(?:[.,;]\\s|[.,;]?$|\\s+[.,;]|\\s(?:current|available|avail|new|your|ref|reference|on|at|has|was|with|via|for|transaction|trans|fee|balance|bal|id|tax)\\b|\\s\\d{4}-|\\s\\())', 'i'));
+  const at = r.type === 'Expense' ? t.match(/\bat\s+(?!\d)([A-Za-z][A-Za-z0-9 .&'\/\-]{1,50}?)(?=\s*(?:[.,;]\s|[.,;]?$|\s(?:on|avail|bal|ref|date|has|with|for)\b|\s\d))/i) : null;
+  r.payee = ((desc && desc[1]) || (who && who[1]) || (at && at[1]) || '').replace(/\s+/g, ' ').replace(/[.\-\s]+$/, '').trim();
+  if (!r.payee && /\bairtime\b/i.test(t)) r.payee = 'Airtime';
+  if (!r.payee && /\b(data )?bundle\b/i.test(t)) r.payee = 'Data bundle';
+  if (/^(you|your|a\/?c|acct|account)$/i.test(r.payee)) r.payee = '';
+
+  const ref = t.match(/\b(?:reference|ref)\b\.?\s*[:.]?\s*([^.;]{1,40}?)(?=\s*(?:[.;]|$|\s(?:transaction|financial|fee|tax|current|available|your)\b))/i);
+  r.ref = ref ? ref[1].trim() : '';
+  const id = t.match(/\b(?:financial\s+)?(?:transaction|trans|txn)\.?\s*(?:id|no|ref|number)\.?\s*[:.]?\s*([A-Za-z0-9\-]{4,})/i);
+  r.txId = id ? id[1] : '';
+  // when it happened, if the SMS says (e.g. "completed at 2026-10-18 10:05:12" or "on 19/10/2026")
+  let dm = t.match(/\b(20\d{2})-(\d{2})-(\d{2})\b/);
+  if (dm) r.date = dm[1] + '-' + dm[2] + '-' + dm[3];
+  else if ((dm = t.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/))) r.date = dm[3] + '-' + ('0' + dm[2]).slice(-2) + '-' + ('0' + dm[1]).slice(-2);
+  return r;
+}
+
+/* ---------- Mobile app API ---------- */
+
+/**
+ * The Flutter app sends {"action": "...", "args": [...], "appKey": "..."} to the phone deployment.
+ * Only these functions can be called, and only with the app key (separate from the SMS key).
+ */
+function api_(body) {
+  let out;
+  try {
+    ensureSetup_();
+    if (!body.appKey || String(body.appKey) !== getSetting_('AppKey')) {
+      throw new Error('Wrong app key – pair the app again (web app → SMS Inbox → Phone setup → Mobile app).');
+    }
+    const API = {
+      getData: getData, saveTransaction: saveTransaction, deleteTransaction: deleteTransaction,
+      saveCategory: saveCategory, deleteCategory: deleteCategory, setBudget: setBudget,
+      saveAccount: saveAccount, deleteAccount: deleteAccount,
+      saveProject: saveProject, fundProject: fundProject, deleteProject: deleteProject,
+      savePurchase: savePurchase, fundPurchase: fundPurchase, markPurchaseBought: markPurchaseBought, deletePurchase: deletePurchase,
+      saveSettings: saveSettings, categoriseTx: categoriseTx, makeTransfer: makeTransfer,
+      recordFromSms: recordFromSms, ignoreSms: ignoreSms, saveRule: saveRule, deleteRule: deleteRule,
+      testSms: testSms, apiIngest: apiIngest, apiIngestMany: apiIngestMany, importAll: importAll
+    };
+    const fn = API[body.action];
+    if (!fn) throw new Error('Unknown action: ' + body.action);
+    API_MODE_ = true;
+    out = { ok: true, data: fn.apply(null, Array.isArray(body.args) ? body.args : []) };
+  } catch (err) {
+    out = { ok: false, error: String((err && err.message) || err) };
+  } finally {
+    API_MODE_ = false;
+  }
+  return ContentService.createTextOutput(JSON.stringify(out)).setMimeType(ContentService.MimeType.JSON);
+}
+
+/** An SMS read by the mobile app: record it and return fresh data plus what happened. */
+function apiIngest(sender, text, whenMs) {
+  auth_();
+  const result = ingestSms_(sender || '', text, whenMs ? String(whenMs) : '');
+  const data = getData();
+  data.ingestResult = result;
+  return data;
+}
+
+/** Several SMS at once (importing past messages): [[sender, text, whenMs], ...]. */
+function apiIngestMany(items) {
+  auth_();
+  const results = (Array.isArray(items) ? items : []).slice(0, 100).map(function (i) {
+    try { return ingestSms_(String(i[0] || ''), String(i[1] || ''), i[2] ? String(i[2]) : ''); }
+    catch (e) { return { ok: false, status: 'Error', note: String(e && e.message || e) }; }
+  });
+  const data = getData();
+  data.ingestResults = results;
+  return data;
+}
+
+/** Replace all data with a copy sent by the mobile app (used when switching from phone storage to Google). */
+function importAll(data) {
+  auth_();
+  const lock = LockService.getScriptLock();
+  lock.waitLock(30000);
+  try {
+    const ss = ss_();
+    Object.keys(SCHEMA).forEach(function (name) {
+      if (name === 'Settings') return;
+      const rows = (data && Array.isArray(data[name])) ? data[name] : [];
+      const sh = ss.getSheetByName(name);
+      const h = headers_(sh);
+      if (sh.getLastRow() > 1) sh.getRange(2, 1, sh.getLastRow() - 1, Math.max(sh.getLastColumn(), 1)).clearContent();
+      if (rows.length) {
+        const vals = rows.map(function (r) { return h.map(function (k) { return cellFor_(k, r[k]); }); });
+        sh.getRange(2, 1, vals.length, h.length).setValues(vals);
+      }
+    });
+    const st = (data && data.Settings) || {};
+    ['CurrencySymbol', 'OwnerName'].forEach(function (k) { if (st[k] !== undefined) setSetting_(k, str_(st[k]), ss); });
+  } finally {
+    lock.releaseLock();
+  }
+  return getData();
+}
+
+/** How a value from the app is written to a cell: numbers stay numbers, yyyy-MM-dd dates become dates, the rest text. */
+function cellFor_(key, v) {
+  if (v === null || v === undefined || v === '') return '';
+  if (typeof v === 'number') return v;
+  if (typeof v === 'boolean') return v ? 'TRUE' : 'FALSE';
+  const s = String(v);
+  if (/^(Date|StartDate|TargetDate|SmsDate)$/.test(key) && /^\d{4}-\d{2}-\d{2}$/.test(s)) return s;
+  if (/^(Amount|Fee|Balance|OpeningBalance|MonthlyBudget|Budget|SetAside|EstCost|SavedSoFar|ReceivedAt)$/.test(key) && /^-?\d+(\.\d+)?$/.test(s)) return Number(s);
+  return txt_(s);
+}
+
+function resetAppKey() {
+  auth_();
+  setSetting_('AppKey', newKey_() + newKey_().slice(0, 8));
+  return getData();
+}
+
+/* ---------- SMS API used by the web app ---------- */
+
+/** Preview how a pasted SMS would be read (nothing is saved). */
+function testSms(text, sender) {
+  auth_();
+  const ss = ss_();
+  const fw = splitForwarded_(text);
+  text = fw.text;
+  sender = str_(sender) || fw.sender;
+  const p = parseSms_(text);
+  return Object.assign(p, {
+    sender: sender,
+    account: matchAccount_(ss, sender, text, p.payee),
+    category: p.type ? (ruleCategory_(ss, p.type, [p.payee, p.ref, text].join(' ')) || UNCAT) : ''
+  });
+}
+
+/** Add an SMS by pasting it into the app (same path as a forwarded one). */
+function addSms(text, sender) {
+  auth_();
+  if (!str_(text)) throw new Error('Paste the SMS text first.');
+  const result = ingestSms_(sender || '', text, '');
+  return { result: result, data: getData() };
+}
+
+/** Give a transaction a category; optionally remember the payee as a rule and apply it to similar ones. */
+function categoriseTx(id, category, keyword) {
+  auth_();
+  const ss = ss_();
+  const t = getById_('Transactions', id);
+  if (!t) throw new Error('Transaction not found.');
+  const ok = readTable_(ss, 'Categories').some(function (c) { return c.Name === category && c.Type === t.Type; });
+  if (!ok) throw new Error('Choose a valid ' + String(t.Type).toLowerCase() + ' category.');
+  upsert_('Transactions', { ID: id, Category: category });
+  const kw = str_(keyword);
+  if (kw) {
+    const exists = readTable_(ss, 'Rules').some(function (r) { return String(r.Keyword).toLowerCase() === kw.toLowerCase(); });
+    if (!exists) upsert_('Rules', { Keyword: txt_(kw), Category: category });
+    readTable_(ss, 'Transactions').forEach(function (x) {
+      if (x.Category === UNCAT && x.Type === t.Type && wordIn_(kw.toLowerCase(), [x.Payee, x.Description].join(' '))) {
+        upsert_('Transactions', { ID: x.ID, Category: category });
+      }
+    });
+  }
+  return getData();
+}
+
+/** Turn an SMS income/expense into a transfer between your own accounts, removing the matching other half. */
+function makeTransfer(id, otherAccount, mirrorId) {
+  auth_();
+  const t = getById_('Transactions', id);
+  if (!t) throw new Error('Transaction not found.');
+  if (t.Type === 'Transfer') return getData();
+  const other = str_(otherAccount);
+  if (!other || other === t.Account) throw new Error('Choose your other account.');
+  if (!getAccountByName_(other)) throw new Error('Account not found.');
+  const from = t.Type === 'Expense' ? t.Account : other;
+  const to = t.Type === 'Expense' ? other : t.Account;
+  upsert_('Transactions', { ID: id, Type: 'Transfer', Category: 'Transfer', Account: from, ToAccount: to, ProjectID: '' });
+  if (str_(mirrorId) && mirrorId !== id) deleteById_('Transactions', mirrorId);
+  return getData();
+}
+
+function getAccountByName_(name) {
+  return readTable_(ss_(), 'Accounts').filter(function (a) { return a.Name === name; })[0] || null;
+}
+
+/** Record an SMS that needed review, using the details you confirmed. */
+function recordFromSms(logId, d) {
+  auth_();
+  const log = getById_('SmsLog', logId);
+  if (!log) throw new Error('Message not found.');
+  const txId = txUpsert_({
+    Date: d.Date, Type: d.Type, Category: d.Category, Amount: d.Amount, Account: d.Account, ToAccount: d.ToAccount,
+    Description: d.Description, ProjectID: '', Source: 'SMS', Payee: log.Payee || '', SmsID: logId
+  });
+  upsert_('SmsLog', { ID: logId, Status: 'Recorded', Account: d.Account, TransactionID: txId, Note: 'Recorded after review' });
+  return getData();
+}
+
+function ignoreSms(logId) {
+  auth_();
+  upsert_('SmsLog', { ID: logId, Status: 'Ignored', Note: 'Ignored by you' });
+  return getData();
+}
+
+function saveRule(r) {
+  auth_();
+  const kw = str_(r.Keyword);
+  if (!kw) throw new Error('Enter a keyword.');
+  if (!readTable_(ss_(), 'Categories').some(function (c) { return c.Name === r.Category; })) throw new Error('Choose a category.');
+  const dup = readTable_(ss_(), 'Rules').some(function (x) { return String(x.Keyword).toLowerCase() === kw.toLowerCase() && String(x.ID) !== str_(r.ID); });
+  if (dup) throw new Error('A rule for "' + kw + '" already exists.');
+  upsert_('Rules', { ID: str_(r.ID) || undefined, Keyword: txt_(kw), Category: r.Category });
+  return getData();
+}
+
+function deleteRule(id) {
+  auth_();
+  deleteById_('Rules', id);
+  return getData();
+}
+
+/** Fresh data for the Refresh button. */
+function refreshData() {
+  return getData();
+}
+
+function resetSmsKey() {
+  auth_();
+  setSetting_('SmsKey', newKey_());
+  return getData();
+}
+
+</script>
+<script>
+/* Show any script error on screen instead of leaving the page stuck on "Loading". */
+window.addEventListener('error',function(ev){var v=document.getElementById('view');if(v&&/Loading your finances/.test(v.textContent)){v.innerHTML='<div class="card"><div class="empty"><b>The app hit an error while starting</b><br>'+String(ev.message||'Unknown error').replace(/[<>&]/g,'')+'<br><small>Reload the page. If it keeps happening, send this message to get it fixed.</small></div></div>';}});
+</script>
+<script>
+(function(){
+'use strict';
+/* ================================================================
+   Icons & small helpers
+   ================================================================ */
+const I={grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+ list:'<path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>',
+ pie:'<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
+ target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
+ cart:'<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
+ sliders:'<line x1="4" x2="4" y1="21" y2="14"/><line x1="4" x2="4" y1="10" y2="3"/><line x1="12" x2="12" y1="21" y2="12"/><line x1="12" x2="12" y1="8" y2="3"/><line x1="20" x2="20" y1="21" y2="16"/><line x1="20" x2="20" y1="12" y2="3"/><line x1="2" x2="6" y1="14" y2="14"/><line x1="10" x2="14" y1="8" y2="8"/><line x1="18" x2="22" y1="16" y2="16"/>',
+ wallet:'<path d="M19 7V4a1 1 0 0 0-1-1H5a2 2 0 0 0 0 4h15a1 1 0 0 1 1 1v4h-3a2 2 0 0 0 0 4h3a1 1 0 0 0 1-1v-2a1 1 0 0 0-1-1"/><path d="M3 5v14a2 2 0 0 0 2 2h15a1 1 0 0 0 1-1v-4"/>',
+ up:'<polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/>',
+ down:'<polyline points="22 17 13.5 8.5 8.5 13.5 2 7"/><polyline points="16 17 22 17 22 11"/>',
+ coins:'<circle cx="8" cy="8" r="6"/><path d="M18.09 10.37A6 6 0 1 1 10.34 18"/><path d="M7 6h1v4"/>',
+ bank:'<line x1="3" x2="21" y1="22" y2="22"/><line x1="6" x2="6" y1="18" y2="11"/><line x1="10" x2="10" y1="18" y2="11"/><line x1="14" x2="14" y1="18" y2="11"/><line x1="18" x2="18" y1="18" y2="11"/><polygon points="12 2 20 7 4 7"/>',
+ plus:'<path d="M5 12h14"/><path d="M12 5v14"/>',
+ edit:'<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>',
+ trash:'<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>',
+ left:'<path d="m15 18-6-6 6-6"/>',right:'<path d="m9 18 6-6-6-6"/>',
+ menu:'<line x1="4" x2="20" y1="12" y2="12"/><line x1="4" x2="20" y1="6" y2="6"/><line x1="4" x2="20" y1="18" y2="18"/>',
+ search:'<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+ dl:'<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/>',
+ check:'<path d="M20 6 9 17l-5-5"/>',
+ clock:'<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
+ swap:'<path d="m16 3 4 4-4 4"/><path d="M20 7H4"/><path d="m8 21-4-4 4-4"/><path d="M4 17h16"/>',
+ tag:'<path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5"/>',
+ msg:'<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+ phone:'<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
+ copy:'<rect width="14" height="14" x="8" y="8" rx="2" ry="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+ alert:'<circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/>',
+ wand:'<path d="m21.64 3.64-1.28-1.28a1.21 1.21 0 0 0-1.72 0L2.36 18.64a1.21 1.21 0 0 0 0 1.72l1.28 1.28a1.2 1.2 0 0 0 1.72 0L21.64 5.36a1.2 1.2 0 0 0 0-1.72Z"/><path d="m14 7 3 3"/><path d="M5 6v4"/><path d="M19 14v4"/><path d="M10 2v2"/><path d="M7 8H3"/><path d="M21 16h-4"/><path d="M11 3H9"/>',
+ out:'<path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" x2="9" y1="12" y2="12"/>',
+ sheet:'<path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><path d="M8 13h8"/><path d="M8 17h8"/><path d="M12 13v8"/>'};
+const ic=(n,s)=>`<svg width="${s||20}" height="${s||20}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${I[n]||''}</svg>`;
+const $=id=>document.getElementById(id);
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const hd=(i,t,s,r,tone)=>`<div class="ch"><span class="chi ${tone||''}">${ic(i,22)}</span><div style="min-width:0"><div class="ct">${t}</div>${s?`<div class="cs">${s}</div>`:''}</div>${r?`<div class="cr">${r}</div>`:''}</div>`;
+const fl=(l,h,x)=>`<div class="f ${x||''}"><label class="lb">${l}</label>${h}</div>`;
+const stat=(l,i,v,s,cls)=>`<div class="stat"><div class="sl"><span>${l}</span><span class="si">${ic(i,22)}</span></div><b class="${cls||''}" title="${esc(v)}">${v}</b>${s?`<small>${s}</small>`:''}</div>`;
+const stats=(arr,cmp)=>`<div class="stats${cmp?' cmp':''}" data-n="${arr.length}" style="--n:${arr.length}">${arr.join('')}</div>`;
+
+/* ================================================================
+   State & server calls
+   ================================================================ */
+const TABS=[['home','grid','Overview'],['tx','list','Transactions'],['inbox','msg','SMS Inbox'],['bud','pie','Budgets'],['prj','target','Projects'],['pur','cart','Planned Purchases'],['set','sliders','Accounts & Settings']];
+const PRIORITIES=['High','Medium','Low'];
+const PROJECT_STATUSES=['Planned','Active','On Hold','Completed','Cancelled'];
+const PURCHASE_STATUSES=['Planned','Saving','Bought','Cancelled'];
+const ACCOUNT_TYPES=['Cash','Mobile Money','Bank','Savings','Investment','Other'];
+const PALETTE=['#2563eb','#f97316','#059669','#e11d48','#7c3aed','#eab308','#ec4899','#06b6d4','#84cc16','#6366f1','#f43f5e','#94a3b8'];
+const S={data:null,tab:'home',month:null,charts:{},f:{type:'',category:'',account:'',q:'',all:false},txType:'Expense',edit:null,draft:null,pv:'open',uv:'open',iv:'cat'};
+
+let BUSY=0;const bz=d=>{BUSY=Math.max(0,BUSY+d);$('ld').style.display=BUSY?'block':'none';document.body.classList.toggle('b',BUSY>0)};
+function toast(m,err){const t=$('toast');t.textContent=m;t.className='s'+(err?' e':'');clearTimeout(t._h);t._h=setTimeout(()=>t.className='',err?5000:2800)}
+const run=(fn,...a)=>new Promise((ok,er)=>{bz(1);google.script.run.withSuccessHandler(v=>{bz(-1);ok(v)}).withFailureHandler(e=>{bz(-1);er(e)})[fn](...a)});
+async function mutate(fn,args,msg){try{S.data=await run(fn,...args);render();if(msg)toast(msg);return true}catch(e){toast(e&&e.message?e.message:String(e),true);return false}}
+
+/* ================================================================
+   Money, dates & maths
+   ================================================================ */
+const n=v=>Number(v)||0;
+const sym=()=>(S.data&&S.data.Settings.CurrencySymbol)||'GH₵';
+const fmt=v=>(n(v)<0?'-':'')+sym()+' '+Math.abs(n(v)).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt0=v=>(n(v)<0?'-':'')+sym()+' '+Math.abs(Math.round(n(v))).toLocaleString('en-US');
+const total=a=>a.reduce((s,t)=>s+n(t.Amount),0);
+const pct=(a,b)=>b>0?Math.max(0,Math.min(100,a/b*100)):0;
+function addMonths(ym,k){const[y,m]=ym.split('-').map(Number);const d=new Date(y,m-1+k,1);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
+function monthLabel(ym,short){const[y,m]=ym.split('-').map(Number);return new Date(y,m-1,1).toLocaleDateString('en-GB',short?{month:'short',year:'2-digit'}:{month:'long',year:'numeric'})}
+function niceDate(d){if(!d)return'—';const[y,m,dd]=String(d).split('-').map(Number);return new Date(y,m-1,dd).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'})}
+function monthsLeft(target){if(!target)return null;const days=(new Date(target+'T00:00:00')-new Date(S.data.today+'T00:00:00'))/864e5;return{months:Math.max(1,Math.ceil(days/30.44)),overdue:days<0}}
+const tx=()=>S.data.Transactions;
+const txIn=ym=>tx().filter(t=>String(t.Date).slice(0,7)===ym);
+const sumType=(arr,ty)=>total(arr.filter(t=>t.Type===ty));
+const cats=ty=>S.data.Categories.filter(c=>!ty||c.Type===ty).sort((a,b)=>String(a.Name).localeCompare(b.Name));
+const accNames=()=>S.data.Accounts.map(a=>a.Name);
+const byId=(list,id)=>S.data[list].find(x=>String(x.ID)===String(id));
+function catColor(name,i){const c=S.data.Categories.find(x=>x.Name===name);return(c&&c.Color)||PALETTE[(i||0)%PALETTE.length]}
+function groupSum(arr,key){const m={};arr.forEach(t=>{const k=t[key]||'—';m[k]=(m[k]||0)+n(t.Amount)});return Object.entries(m).sort((a,b)=>b[1]-a[1])}
+function balances(){return S.data.Accounts.map(a=>{let b=n(a.OpeningBalance);tx().forEach(t=>{const v=n(t.Amount);
+ if(t.Type==='Income'&&t.Account===a.Name)b+=v;else if(t.Type==='Expense'&&t.Account===a.Name)b-=v;
+ else if(t.Type==='Transfer'){if(t.Account===a.Name)b-=v;if(t.ToAccount===a.Name)b+=v}});return{...a,balance:b}})}
+const openProject=p=>!['Completed','Cancelled'].includes(p.Status);
+const openPurchase=x=>['Planned','Saving'].includes(x.Status);
+const pName=id=>(byId('Projects',id)||{}).Name;
+function projectStats(p){const items=S.data.Purchases.filter(x=>String(x.ProjectID)===String(p.ID)&&x.Status!=='Cancelled');
+ const itemsCost=items.reduce((a,x)=>a+n(x.EstCost),0),budget=n(p.Budget)>0?n(p.Budget):itemsCost,saved=n(p.SetAside);
+ const spent=total(tx().filter(t=>t.Type==='Expense'&&String(t.ProjectID)===String(p.ID)));
+ const remaining=Math.max(0,budget-saved),ml=monthsLeft(p.TargetDate);
+ return{items,budget,saved,spent,remaining,ml,monthly:ml&&remaining>0?remaining/ml.months:0,fromItems:!(n(p.Budget)>0)&&items.length>0}}
+function purchaseStats(x){const remaining=Math.max(0,n(x.EstCost)-n(x.SavedSoFar)),ml=monthsLeft(x.TargetDate);return{remaining,ml,monthly:ml&&remaining>0?remaining/ml.months:0}}
+function planItems(){const ids=new Set(S.data.Projects.map(p=>String(p.ID))),out=[];
+ S.data.Projects.filter(openProject).forEach(p=>{const s=projectStats(p);out.push({kind:'Project',name:p.Name,priority:p.Priority,target:p.TargetDate,remaining:s.remaining,monthly:s.monthly})});
+ S.data.Purchases.filter(x=>openPurchase(x)&&!ids.has(String(x.ProjectID))).forEach(x=>{const s=purchaseStats(x);out.push({kind:'Purchase',name:x.Item,priority:x.Priority,target:x.TargetDate,remaining:s.remaining,monthly:s.monthly})});
+ return out}
+function avgSurplus(){const cur=S.data.today.slice(0,7),nets=[];for(let k=1;k<=3;k++){const t=txIn(addMonths(cur,-k));if(t.length)nets.push(sumType(t,'Income')-sumType(t,'Expense'))}
+ return nets.length?{avg:nets.reduce((a,b)=>a+b,0)/nets.length,months:nets.length}:null}
+const sortPlan=(a,b,pa,pb,da,db)=>PRIORITIES.indexOf(pa)-PRIORITIES.indexOf(pb)||String(da||'9').localeCompare(String(db||'9'));
+
+/* UI bits */
+function progress(v,max,cls){const p=pct(v,max),over=max>0&&v>max;const st=cls||(over?'over':p>=85?'near':'');return`<div class="bar ${st}"><i style="width:${over?100:p}%"></i></div>`}
+const typePill=t=>`<span class="pill ${t==='Income'?'in':t==='Expense'?'ex':'tr'}">${esc(t)}</span>`;
+const amtCls=t=>t.Type==='Income'?'pos':t.Type==='Expense'?'neg':'';
+const sign=t=>t.Type==='Income'?'+':t.Type==='Expense'?'−':'';
+const opts=(arr,sel)=>arr.map(o=>{const v=typeof o==='object'?o.value:o,l=typeof o==='object'?o.label:o;return`<option value="${esc(v)}" ${String(v)===String(sel??'')?'selected':''}>${esc(l)}</option>`}).join('');
+const monthPicker=()=>`<div class="mp"><button class="ib" data-act="prevMonth" aria-label="Previous month">${ic('left')}</button><input type="month" id="month" value="${S.month}"><button class="ib" data-act="nextMonth" aria-label="Next month">${ic('right')}</button></div>`;
+const head=(t,s,right)=>`<div class="ph"><div><h2>${t}</h2>${s?`<p>${s}</p>`:''}</div>${right||''}</div>`;
+const V=h=>$('view').innerHTML=h;
+
+/* ================================================================
+   Shell
+   ================================================================ */
+function paintShell(){
+ const st=S.data.Settings,name=String(st.OwnerName||'').trim(),email=S.data.user||'';
+ $('av').textContent=(name||email||'M').charAt(0).toUpperCase();
+ $('meN').textContent=name||'Pecunia';$('meR').textContent=email||'Personal account';
+ $('who').innerHTML=name?`${esc(name)} <span>· ${esc(sym())}</span>`:'';
+ $('hsub').textContent='Income, spending & plans · '+sym();
+ const badge=inboxCount();
+ $('nav').innerHTML=TABS.map(t=>`<button class="${S.tab===t[0]?'on':''}" data-act="go" data-id="${t[0]}" title="${esc(t[2])}">${ic(t[1],22)}<span>${esc(t[2])}</span>${t[0]==='inbox'&&badge?`<b class="nb">${badge}</b>`:''}</button>`).join('');
+}
+function render(){
+ paintShell();Object.values(S.charts).forEach(c=>c&&c.destroy());S.charts={};
+ ({home:pHome,tx:pTx,inbox:pInbox,bud:pBud,prj:pPrj,pur:pPur,set:pSet})[S.tab]();
+}
+function go(t){S.tab=t;menu(0);render();$('main').scrollTop=0}
+function menu(o){const sd=$('side'),op=o===undefined?!sd.classList.contains('open'):!!+o;sd.classList.toggle('open',op);$('scrim').style.display=op?'block':'none'}
+
+/* ================================================================
+   Overview
+   ================================================================ */
+function pHome(){
+ const m=S.month,t=txIn(m),inc=sumType(t,'Income'),exp=sumType(t,'Expense'),net=inc-exp;
+ const prevExp=sumType(txIn(addMonths(m,-1)),'Expense'),chg=prevExp>0?(exp-prevExp)/prevExp*100:null;
+ const bals=balances(),tb=bals.reduce((a,b)=>a+b.balance,0),byCat=groupSum(t.filter(x=>x.Type==='Expense'),'Category');
+ V(head('Overview',monthLabel(m)+' at a glance',monthPicker())+
+  stats([stat('Income','up',fmt(inc),'Money in this month','pos'),
+   stat('Expenses','down',fmt(exp),chg===null?'Money out this month':`${chg>=0?'▲':'▼'} ${Math.abs(chg).toFixed(0)}% vs last month`,'neg'),
+   stat('Net savings','coins',fmt(net),inc>0?`Savings rate ${(net/inc*100).toFixed(1)}%`:(net>=0?'Surplus':'Deficit'),net>=0?'pos':'neg'),
+   stat('Total balance','wallet',fmt(tb),`Across ${bals.length} account${bals.length===1?'':'s'}`)])+
+  `<div class="g2">
+   <div class="card">${hd('pie','Spending by Category','Where your money went in '+monthLabel(m))}${byCat.length?'<div class="chart"><canvas id="cCat"></canvas></div>':'<div class="empty">No expenses recorded this month.</div>'}</div>
+   <div class="card">${hd('up','Income vs Expenses','Last 12 months, with net savings line','','green')}<div class="chart"><canvas id="cTrend"></canvas></div></div>
+  </div><div class="g2">
+   <div class="card">${hd('target','Budget Check','Categories closest to their limit',`<button class="btn s" data-act="go" data-id="bud">All budgets</button>`,'amber')}${budgetList(m,6)}</div>
+   <div class="card">${hd('bank','Accounts','Current balance in each account',`<button class="btn s" data-act="go" data-id="set">Manage</button>`)}
+    <table><tbody>${bals.map(b=>`<tr><td>${esc(b.Name)}<div class="mut">${esc(b.Type)}</div></td><td class="num ${b.balance<0?'neg':''}"><b>${fmt(b.balance)}</b></td></tr>`).join('')}</tbody>
+    <tfoot><tr><td>Total</td><td class="num">${fmt(tb)}</td></tr></tfoot></table></div>
+  </div><div class="g2">
+   <div class="card">${hd('cart','Can I Afford My Plans?','Projects and planned purchases vs your real surplus','','vio')}${planCheck()}</div>
+   <div class="card">${hd('clock','Recent Transactions','Latest entries across all months',`<button class="btn s" data-act="go" data-id="tx">View all</button>`)}${recent()}</div>
+  </div>`);
+ const css=getComputedStyle(document.documentElement),mut=css.getPropertyValue('--mut').trim(),ln=css.getPropertyValue('--ln').trim();
+ Chart.defaults.font.family="'Plus Jakarta Sans',system-ui,sans-serif";Chart.defaults.color=mut;
+ if(!window.Chart){['cCat','cTrend'].forEach(id=>{const c=$(id);if(c)c.parentNode.innerHTML='<div class="empty">Chart library could not load. Check your internet connection.</div>'});return}
+ if(byCat.length)S.charts.cat=new Chart($('cCat'),{type:'doughnut',
+  data:{labels:byCat.map(c=>c[0]),datasets:[{data:byCat.map(c=>c[1]),backgroundColor:byCat.map((c,i)=>catColor(c[0],i)),borderWidth:2,borderColor:css.getPropertyValue('--card').trim()}]},
+  options:{maintainAspectRatio:false,cutout:'64%',plugins:{legend:{position:'right',labels:{boxWidth:12,usePointStyle:true,font:{size:12}}},
+   tooltip:{callbacks:{label:c=>`${c.label}: ${fmt(c.raw)} (${(c.raw/exp*100).toFixed(0)}%)`}}}}});
+ const ms=Array.from({length:12},(_,i)=>addMonths(m,i-11)),inc12=ms.map(x=>sumType(txIn(x),'Income')),exp12=ms.map(x=>sumType(txIn(x),'Expense'));
+ S.charts.trend=new Chart($('cTrend'),{data:{labels:ms.map(x=>monthLabel(x,true)),datasets:[
+  {type:'bar',label:'Income',data:inc12,backgroundColor:'#10b981',borderRadius:5,maxBarThickness:22},
+  {type:'bar',label:'Expenses',data:exp12,backgroundColor:'#f43f5e',borderRadius:5,maxBarThickness:22},
+  {type:'line',label:'Net',data:inc12.map((v,i)=>v-exp12[i]),borderColor:'#2563eb',backgroundColor:'#2563eb',tension:.35,pointRadius:3}]},
+  options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},
+   scales:{x:{grid:{display:false}},y:{grid:{color:ln},border:{display:false},ticks:{callback:v=>Number(v).toLocaleString()}}},
+   plugins:{legend:{labels:{boxWidth:12,usePointStyle:true}},tooltip:{callbacks:{label:c=>`${c.dataset.label}: ${fmt(c.raw)}`}}}}});
+}
+/* Budgets carry forward: the latest change made in or before a month applies to that month. */
+function budgetEntry(c,ym){return(S.data.Budgets||[]).filter(b=>b.Category===c.Name&&String(b.Month)<=ym).sort((a,b)=>String(b.Month).localeCompare(String(a.Month)))[0]}
+function budgetFor(c,ym){const e=budgetEntry(c,ym);return e?n(e.Amount):n(c.MonthlyBudget)}
+function budgetList(m,limit){
+ const sp=Object.fromEntries(groupSum(txIn(m).filter(x=>x.Type==='Expense'),'Category'));
+ let r=cats('Expense').map(c=>({c,b:budgetFor(c,m),s:sp[c.Name]||0})).filter(x=>x.b>0).sort((a,b)=>b.s/b.b-a.s/a.b);
+ if(!r.length)return'<div class="empty">No budgets set yet.<br>Set monthly limits in the Budgets page.</div>';
+ if(limit)r=r.slice(0,limit);
+ return r.map(x=>`<div class="item"><div class="it"><b><span class="dot" style="background:${esc(x.c.Color)}"></span>${esc(x.c.Name)}</b><span class="num ${x.s>x.b?'neg':''}">${fmt0(x.s)} / ${fmt0(x.b)}</span></div>${progress(x.s,x.b)}<div class="m">${x.s>x.b?`<span class="neg">Over by ${fmt(x.s-x.b)}</span>`:`${fmt(x.b-x.s)} left`}</div></div>`).join('');
+}
+function planCheck(){
+ const items=planItems().filter(i=>i.remaining>0);
+ if(!items.length)return'<div class="empty">No open projects or planned purchases yet.<br>Add them under Projects or Planned Purchases.</div>';
+ const need=items.reduce((a,i)=>a+i.monthly,0),rem=items.reduce((a,i)=>a+i.remaining,0),sur=avgSurplus(),und=items.filter(i=>!i.target).length;
+ let c;
+ if(!sur)c='<div class="note info">Record a few months of income and expenses and this will compare your plans against your actual surplus.</div>';
+ else if(sur.avg<=0)c=`<div class="note bad">Your average monthly result over the last ${sur.months} month(s) is <b>${fmt(sur.avg)}</b>. Cut spending or raise income before taking on new commitments.</div>`;
+ else if(need<=sur.avg)c=`<div class="note good"><b>On track.</b> Your plans need about <b>${fmt(need)}</b>/month and your average surplus is <b>${fmt(sur.avg)}</b>. At that pace everything is funded in about ${Math.ceil(rem/sur.avg)} month(s).</div>`;
+ else c=`<div class="note bad"><b>Short by about ${fmt(need-sur.avg)}/month.</b> Plans need ${fmt(need)}/month but your average surplus is ${fmt(sur.avg)}. Consider moving low-priority dates back.</div>`;
+ const top=items.slice().sort((a,b)=>sortPlan(a,b,a.priority,b.priority,a.target,b.target)).slice(0,5);
+ return c+`<div class="kv"><span>Still to fund</span><b>${fmt(rem)}</b></div><div class="kv"><span>Monthly saving needed</span><b>${fmt(need)}</b></div>
+  ${und?`<div class="mut">${und} item(s) have no target date, so they are not in the monthly figure.</div>`:''}
+  <div style="margin-top:10px">${top.map(i=>`<div class="item"><div class="it"><b>${esc(i.name)}</b><span class="num">${fmt0(i.remaining)}</span></div><div class="m">${i.kind} · <span class="pill ${esc(i.priority)}">${esc(i.priority)}</span> · ${i.target?niceDate(i.target):'No date'}</div></div>`).join('')}</div>`;
+}
+function recent(){
+ const r=tx().slice().sort((a,b)=>String(b.Date).localeCompare(String(a.Date))||String(b.ID).localeCompare(String(a.ID))).slice(0,7);
+ if(!r.length)return'<div class="empty">No transactions yet.<br>Use <b>Add transaction</b> at the top to record your first one.</div>';
+ return r.map(t=>`<div class="item"><div class="it"><b>${esc(t.Description||t.Category)}</b><span class="num ${amtCls(t)}"><b>${sign(t)}${fmt(t.Amount)}</b></span></div><div class="m">${niceDate(t.Date)} · ${t.Type==='Transfer'?esc(t.Account+' → '+t.ToAccount):`<span class="dot" style="background:${esc(catColor(t.Category))}"></span>${esc(t.Category)}`}</div></div>`).join('');
+}
+
+/* ================================================================
+   Transactions (form left, ledger right — like the Notices pages)
+   ================================================================ */
+function pTx(){
+ const rows=filteredTx(),inc=sumType(rows,'Income'),exp=sumType(rows,'Expense');
+ const allCats=[...new Set(tx().map(t=>t.Category).concat(S.data.Categories.map(c=>c.Name)))].filter(c=>c&&c!=='Transfer').sort();
+ V(head('Transactions',S.f.all?'All months':monthLabel(S.month),monthPicker())+
+  stats([stat('Money in','up',fmt(inc),`${rows.filter(t=>t.Type==='Income').length} income entries`,'pos'),
+   stat('Money out','down',fmt(exp),`${rows.filter(t=>t.Type==='Expense').length} expense entries`,'neg'),
+   stat('Net','coins',fmt(inc-exp),`${rows.length} transactions shown`,inc-exp>=0?'pos':'neg')])+
+  `<div class="g12"><div id="txFormBox"></div>
+  <div class="tw"><div class="twh"><span class="t"><span class="chi">${ic('list',22)}</span>Transaction Ledger</span><button class="btn s" data-act="csv">${ic('dl',16)} Export CSV</button></div>
+   <div class="twf"><div class="srch">${ic('search',18)}<input id="fQ" placeholder="Search description or category…" value="${esc(S.f.q)}"></div>
+    <select id="fType"><option value="">All types</option>${opts(['Income','Expense','Transfer'],S.f.type)}</select>
+    <select id="fCat"><option value="">All categories</option>${opts(allCats,S.f.category)}</select>
+    <select id="fAcc"><option value="">All accounts</option>${opts(accNames(),S.f.account)}</select>
+    <label class="mut" style="display:flex;align-items:center;gap:8px;white-space:nowrap"><input type="checkbox" id="fAll" ${S.f.all?'checked':''}> All months</label></div>
+   <div id="txTable"></div></div></div>`);
+ renderTxForm();renderTxTable();
+ const bind=(id,k,ev)=>$(id).addEventListener(ev||'change',e=>{S.f[k]=e.target.type==='checkbox'?e.target.checked:e.target.value;if(k==='all')pTx();else{renderTxTable();}});
+ bind('fType','type');bind('fCat','category');bind('fAcc','account');bind('fQ','q','input');bind('fAll','all');
+}
+function filteredTx(){const q=S.f.q.toLowerCase();
+ return(S.f.all?tx():txIn(S.month)).filter(t=>(!S.f.type||t.Type===S.f.type)&&(!S.f.category||t.Category===S.f.category)&&(!S.f.account||t.Account===S.f.account||t.ToAccount===S.f.account)&&(!q||String(t.Description).toLowerCase().includes(q)||String(t.Category).toLowerCase().includes(q)))
+  .sort((a,b)=>String(b.Date).localeCompare(String(a.Date))||String(b.ID).localeCompare(String(a.ID)))}
+function renderTxTable(){
+ const r=filteredTx();
+ $('txTable').innerHTML=r.length?`<div class="ov"><table><thead><tr><th>Date</th><th>Details</th><th>Type</th><th class="num">Amount</th><th></th></tr></thead><tbody>${r.map(t=>`<tr>
+  <td style="white-space:nowrap">${niceDate(t.Date)}</td>
+  <td style="min-width:220px"><b style="font-weight:600">${esc(t.Description||(t.Type==='Transfer'?'Transfer':t.Category))}</b>${t.Source==='SMS'?' <span class="pill g" title="Captured from SMS">SMS</span>':''}${t.Category==='Uncategorised'?' <span class="pill Medium">Uncategorised</span>':''}<div class="mut">${t.Type==='Transfer'?esc(t.Account+' → '+t.ToAccount):`<span class="dot" style="background:${esc(catColor(t.Category))}"></span>${esc(t.Category)} · ${esc(t.Account)}`}${t.ProjectID&&pName(t.ProjectID)?' · '+esc(pName(t.ProjectID)):''}</div></td>
+  <td>${typePill(t.Type)}</td>
+  <td class="num ${amtCls(t)}"><b>${sign(t)}${fmt(t.Amount)}</b></td>
+  <td><div class="btns" style="flex-wrap:nowrap;justify-content:flex-end"><button class="btn s ic" data-act="editTx" data-id="${esc(t.ID)}" title="Edit">${ic('edit',16)}</button><button class="btn s ic d" data-act="delTx" data-id="${esc(t.ID)}" title="Delete">${ic('trash',16)}</button></div></td></tr>`).join('')}</tbody></table></div>`
+  :`<div class="empty">No transactions match these filters.${S.f.all?'':'<br>Showing '+monthLabel(S.month)+' only. Tick “All months” to search everything.'}</div>`;
+}
+function readTxForm(){const f=$('txf');if(!f)return null;const o={};['Date','Amount','Category','Account','ToAccount','ProjectID','Description'].forEach(k=>{if(f.elements[k])o[k]=f.elements[k].value});return o}
+function renderTxForm(){
+ const box=$('txFormBox');if(!box)return;
+ const ty=S.txType,d=S.draft||S.edit||{},acc=accNames();
+ const projects=S.data.Projects.filter(p=>openProject(p)||String(p.ID)===String(d.ProjectID));
+ const catList=cats(ty==='Income'?'Income':'Expense').map(c=>c.Name);
+ box.innerHTML=`<div class="card">${hd(S.edit?'edit':'plus',S.edit?'Edit Transaction':'Record a Transaction',S.edit?'Change the details, then save':'Log money in, money out, or a transfer')}
+  <div class="sub full" style="margin-bottom:22px">${['Expense','Income','Transfer'].map(x=>`<button type="button" class="${ty===x?'on':''}" data-act="txType" data-id="${x}">${x}</button>`).join('')}</div>
+  <form id="txf" novalidate><div class="grid">
+   ${fl('Date',`<input name="Date" type="date" value="${esc(d.Date||S.data.today)}">`)}
+   ${fl('Amount ('+esc(sym())+')',`<input name="Amount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00" value="${esc(d.Amount??'')}">`)}
+   ${ty!=='Transfer'?fl('Category',`<select name="Category">${opts(catList,d.Category)}</select>`,'full'):''}
+   ${fl(ty==='Transfer'?'From account':ty==='Income'?'Received into':'Paid from',`<select name="Account">${opts(acc,d.Account)}</select>`,ty==='Transfer'?'':'full')}
+   ${ty==='Transfer'?fl('To account',`<select name="ToAccount">${opts(acc,d.ToAccount||acc[1])}</select>`):''}
+   ${ty==='Expense'?fl('Project (optional)',`<select name="ProjectID">${opts([{value:'',label:'— Not part of a project —'}].concat(projects.map(p=>({value:p.ID,label:p.Name}))),d.ProjectID)}</select>`,'full'):''}
+   ${fl('Description',`<input name="Description" placeholder="e.g. Melcom groceries, Uber to Airport City" value="${esc(d.Description||'')}">`,'full')}
+  </div><div class="btns">${S.edit?`<button type="button" class="btn" data-act="cancelEdit">Cancel</button>`:''}<button type="submit" class="btn p" style="flex:1">${ic('check',18)} ${S.edit?'Save changes':'Save '+ty.toLowerCase()}</button></div></form></div>`;
+ $('txf').onsubmit=async e=>{e.preventDefault();const v=readTxForm();
+  if(!v.Date)return toast('Date is required.',true);if(!(n(v.Amount)>0))return toast('Enter an amount greater than zero.',true);
+  if(ty!=='Transfer'&&!v.Category)return toast('Add a category first (Accounts & Settings).',true);
+  if(!v.Account)return toast('Add an account first (Accounts & Settings).',true);
+  if(ty==='Transfer'&&v.Account===v.ToAccount)return toast('Choose two different accounts.',true);
+  const wasEdit=!!S.edit;S.draft=v;
+  const ok=await mutate('saveTransaction',[{...v,Type:ty,ID:S.edit?S.edit.ID:'',ProjectID:ty==='Expense'?v.ProjectID:''}],wasEdit?'Transaction updated':ty+' saved');
+  if(ok){S.edit=null;S.draft=null;if(S.tab==='tx'){renderTxForm();}}};
+}
+
+/* ================================================================
+   Budgets
+   ================================================================ */
+function pBud(){
+ const m=S.month,t=txIn(m),sp=Object.fromEntries(groupSum(t.filter(x=>x.Type==='Expense'),'Category')),ex=cats('Expense');
+ const B=c=>budgetFor(c,m);
+ const bud=ex.reduce((a,c)=>a+B(c),0),spB=ex.filter(c=>B(c)>0).reduce((a,c)=>a+(sp[c.Name]||0),0),all=sumType(t,'Expense'),inc=sumType(t,'Income');
+ const over=ex.filter(c=>B(c)>0&&(sp[c.Name]||0)>B(c)).length;
+ V(head('Budgets','Monthly limits for '+monthLabel(m),monthPicker())+
+  stats([stat('Total budget','target',fmt(bud),inc&&bud?`${(bud/inc*100).toFixed(0)}% of this month's income`:'Sum of category limits'),
+   stat('Spent (budgeted)','pie',fmt(spB),bud?`${pct(spB,bud).toFixed(0)}% of budget used`:'—',spB>bud&&bud?'neg':''),
+   stat('Remaining','wallet',fmt(bud-spB),bud-spB<0?'Over budget overall':'Left to spend',bud-spB<0?'neg':'pos'),
+   stat('Over limit','down',String(over),over?'Categories over their budget':'All categories within budget',over?'neg':'')])+
+  `<div class="tw"><div class="twh"><span class="t"><span class="chi amber">${ic('pie',22)}</span>Category Budgets</span><button class="btn s" data-act="addCat" data-id="Expense">${ic('plus',16)} Category</button></div>
+  <div class="ov"><table><thead><tr><th>Category</th><th class="num">Budget</th><th class="num">Spent</th><th class="num">Left</th><th style="min-width:180px">Progress</th><th></th></tr></thead><tbody>
+  ${ex.map(c=>{const b=B(c),s=sp[c.Name]||0,e=budgetEntry(c,m);return`<tr><td><span class="dot" style="background:${esc(c.Color)}"></span><b style="font-weight:600">${esc(c.Name)}</b></td>
+   <td class="num">${b?fmt(b):'<span class="mut">No limit</span>'}${e?`<div class="mut">${e.Month===m?'Changed this month':'Since '+monthLabel(String(e.Month),true)}</div>`:''}</td><td class="num">${fmt(s)}</td><td class="num ${b&&s>b?'neg':''}">${b?fmt(b-s):''}</td>
+   <td>${b?progress(s,b)+`<div class="mut">${pct(s,b).toFixed(0)}% used</div>`:''}</td>
+   <td class="num"><button class="btn s" data-act="setBudget" data-id="${esc(c.ID)}">Set limit</button></td></tr>`}).join('')}
+  </tbody><tfoot><tr><td>Total</td><td class="num">${fmt(bud)}</td><td class="num">${fmt(all)}</td><td class="num">${fmt(bud-spB)}</td><td colspan="2" class="mut" style="font-weight:500">Spent includes categories without a limit</td></tr></tfoot></table></div></div>`);
+}
+
+/* ================================================================
+   Projects
+   ================================================================ */
+function pPrj(){
+ const P=S.data.Projects,openN=P.filter(openProject).length;
+ const list=P.filter(p=>S.pv==='all'||(S.pv==='open'?openProject(p):!openProject(p))).sort((a,b)=>sortPlan(a,b,a.Priority,b.Priority,a.TargetDate,b.TargetDate));
+ const st=P.filter(openProject).map(projectStats),bud=st.reduce((a,s)=>a+s.budget,0),sav=st.reduce((a,s)=>a+s.saved,0),mon=st.reduce((a,s)=>a+s.monthly,0);
+ V(head('Projects','Bigger plans with a budget, a target date and items to buy',`<button class="btn p" data-act="addProject">${ic('plus',18)} New project</button>`)+
+  stats([stat('Open projects','target',String(openN),`${P.length-openN} completed or cancelled`),stat('Total budget','coins',fmt(bud),'Open projects only'),
+   stat('Saved so far','wallet',fmt(sav),bud?`${pct(sav,bud).toFixed(0)}% of the total`:'—','pos'),stat('Save per month','clock',fmt(mon),'To meet every target date')])+
+  `<div class="bar-row"><div class="sub">${[['open','Open',openN],['done','Done',P.length-openN],['all','All',P.length]].map(([k,l,c])=>`<button class="${S.pv===k?'on':''}" data-act="pv" data-id="${k}">${l}<span class="n">${c}</span></button>`).join('')}</div></div>`+
+  (list.length?`<div class="pgrid">${list.map(projectCard).join('')}</div>`:`<div class="card"><div class="empty">No projects here.<br>Projects are bigger plans — a solar install, building a room, a car, school fees.</div></div>`));
+}
+function projectCard(p){
+ const s=projectStats(p);
+ return`<div class="card">${hd('target',esc(p.Name),p.TargetDate?'Target '+niceDate(p.TargetDate):'No target date',`<span class="pill ${esc(p.Status.split(' ')[0])}">${esc(p.Status)}</span>`)}
+  <div class="btns" style="margin:-8px 0 14px;gap:8px"><span class="pill ${esc(p.Priority)}">${esc(p.Priority)} priority</span>${s.ml?(s.ml.overdue?'<span class="pill late">Overdue</span>':`<span class="pill g">${s.ml.months} month${s.ml.months===1?'':'s'} left</span>`):''}</div>
+  ${p.Description?`<p class="mut" style="margin:-8px 0 14px;line-height:1.5">${esc(p.Description)}</p>`:''}
+  <div class="kv"><span>Budget${s.fromItems?' (from items)':''}</span><b>${fmt(s.budget)}</b></div>
+  <div class="kv"><span>Saved toward it</span><b class="pos">${fmt(s.saved)}</b></div>${progress(s.saved,s.budget,'ok')}
+  <div class="kv"><span>Spent so far</span><b>${fmt(s.spent)}</b></div>${progress(s.spent,s.budget,s.spent>s.budget&&s.budget>0?'over':'spent')}
+  ${s.remaining>0&&s.ml?`<div class="note info" style="margin:12px 0 0">Save <b>${fmt(s.monthly)}</b>/month to reach ${fmt0(s.budget)} by ${niceDate(p.TargetDate)}.</div>`:''}
+  ${s.items.length?`<div class="items"><label class="lb">Items (${s.items.length})</label>${s.items.map(x=>`<div class="kv"><span style="color:var(--ink2)">${x.Status==='Bought'?'✅':'▫️'} ${esc(x.Item)}</span><b>${fmt0(x.EstCost)}</b></div>`).join('')}</div>`:''}
+  <div class="btns"><button class="btn s p" data-act="fundProject" data-id="${esc(p.ID)}">${ic('plus',16)} Save toward</button><button class="btn s" data-act="addPurchase" data-id="${esc(p.ID)}">${ic('cart',16)} Item</button>
+   <button class="btn s ic" data-act="editProject" data-id="${esc(p.ID)}" title="Edit">${ic('edit',16)}</button><button class="btn s ic d" data-act="delProject" data-id="${esc(p.ID)}" title="Delete">${ic('trash',16)}</button></div></div>`;
+}
+
+/* ================================================================
+   Planned purchases
+   ================================================================ */
+function pPur(){
+ const U=S.data.Purchases,open=U.filter(openPurchase),est=open.reduce((a,x)=>a+n(x.EstCost),0),sav=open.reduce((a,x)=>a+n(x.SavedSoFar),0);
+ const list=U.filter(x=>S.uv==='all'||(S.uv==='open'?openPurchase(x):!openPurchase(x))).sort((a,b)=>sortPlan(a,b,a.Priority,b.Priority,a.TargetDate,b.TargetDate));
+ V(head('Planned Purchases','Things you plan to buy, and how close you are',`<button class="btn p" data-act="addPurchase">${ic('plus',18)} Plan a purchase</button>`)+
+  stats([stat('Items to buy','cart',String(open.length),`${U.length-open.length} bought or cancelled`),stat('Estimated cost','tag',fmt(est),'Open items'),
+   stat('Saved so far','wallet',fmt(sav),est?`${pct(sav,est).toFixed(0)}% of the cost`:'—','pos'),stat('Still needed','coins',fmt(Math.max(0,est-sav)),'Before you can buy everything','neg')])+
+  `<div class="tw"><div class="twh"><span class="t"><span class="chi vio">${ic('cart',22)}</span>Purchase Plan</span>
+   <div class="sub">${[['open','To buy',open.length],['done','Bought / cancelled',U.length-open.length],['all','All',U.length]].map(([k,l,c])=>`<button class="${S.uv===k?'on':''}" data-act="uv" data-id="${k}">${l}<span class="n">${c}</span></button>`).join('')}</div></div>
+  ${list.length?`<div class="ov"><table><thead><tr><th>Item</th><th>Priority</th><th>Buy by</th><th class="num">Cost</th><th style="min-width:170px">Saved</th><th></th></tr></thead><tbody>
+  ${list.map(x=>{const s=purchaseStats(x);return`<tr><td><b style="font-weight:600">${esc(x.Item)}</b> <span class="pill ${esc(x.Status)} ${x.Status==='Planned'||x.Status==='Saving'?'g':''}">${esc(x.Status)}</span>
+    ${[x.ProjectID&&pName(x.ProjectID),x.Notes].filter(Boolean).length?`<div class="mut">${[x.ProjectID&&pName(x.ProjectID),x.Notes].filter(Boolean).map(esc).join(' · ')}</div>`:''}
+    ${openPurchase(x)&&s.remaining>0&&s.ml?`<div class="mut">${s.ml.overdue?'<span class="neg">Overdue</span> · ':''}Save ${fmt(s.monthly)}/month</div>`:''}</td>
+   <td><span class="pill ${esc(x.Priority)}">${esc(x.Priority)}</span></td><td style="white-space:nowrap">${niceDate(x.TargetDate)}</td><td class="num"><b>${fmt(x.EstCost)}</b></td>
+   <td>${progress(n(x.SavedSoFar),n(x.EstCost),'ok')}<div class="mut">${fmt0(x.SavedSoFar)} · ${pct(n(x.SavedSoFar),n(x.EstCost)).toFixed(0)}%</div></td>
+   <td><div class="btns" style="flex-wrap:nowrap;justify-content:flex-end">${openPurchase(x)?`<button class="btn s p" data-act="fundPurchase" data-id="${esc(x.ID)}">${ic('plus',16)} Save</button><button class="btn s" data-act="buyPurchase" data-id="${esc(x.ID)}">${ic('check',16)} Bought</button>`:''}
+    <button class="btn s ic" data-act="editPurchase" data-id="${esc(x.ID)}" title="Edit">${ic('edit',16)}</button><button class="btn s ic d" data-act="delPurchase" data-id="${esc(x.ID)}" title="Delete">${ic('trash',16)}</button></div></td></tr>`}).join('')}
+  </tbody></table></div>`:'<div class="empty">Nothing here yet.<br>Add things you plan to buy — a laptop, a fridge, an inverter — and track saving toward them.</div>'}</div>`);
+}
+
+/* ================================================================
+   Accounts & settings
+   ================================================================ */
+function pSet(){
+ const bals=balances(),st=S.data.Settings;
+ const catTbl=ty=>`<div class="ov"><table><thead><tr><th>Name</th>${ty==='Expense'?'<th class="num">Limit this month</th>':''}<th></th></tr></thead><tbody>${cats(ty).map(c=>`<tr><td><span class="dot" style="background:${esc(c.Color)}"></span>${esc(c.Name)}</td>${ty==='Expense'?`<td class="num">${budgetFor(c,S.data.today.slice(0,7))?fmt(budgetFor(c,S.data.today.slice(0,7))):'<span class="mut">—</span>'}</td>`:''}
+  <td><div class="btns" style="flex-wrap:nowrap;justify-content:flex-end"><button class="btn s ic" data-act="editCat" data-id="${esc(c.ID)}" title="Edit">${ic('edit',16)}</button><button class="btn s ic d" data-act="delCat" data-id="${esc(c.ID)}" title="Delete">${ic('trash',16)}</button></div></td></tr>`).join('')}</tbody></table></div>`;
+ V(head('Accounts & Settings','Where your money is kept, your categories and preferences')+
+  `<div class="g12"><div class="card">${hd('sliders','General','Name and currency shown across the app')}
+   <form id="sf" novalidate>${fl('Your name',`<input name="OwnerName" placeholder="e.g. John" value="${esc(st.OwnerName||'')}">`)}
+   ${fl('Currency symbol',`<input name="CurrencySymbol" placeholder="GH₵" value="${esc(sym())}">`)}
+   <div class="btns"><button type="submit" class="btn p">${ic('check',18)} Save settings</button><a class="btn" href="${esc(S.data.sheetUrl)}" target="_blank" rel="noopener">${ic('sheet',18)} Open Google Sheet</a>${window.PECUNIA_WEB?`<button type="button" class="btn d" onclick="pecuniaSignOut()">${ic('out',18)} Sign out</button>`:''}</div></form>
+   <p class="mut" style="margin:18px 0 0;line-height:1.5">All your data lives in that Google Sheet, so you can filter, pivot or export it any time.</p></div>
+  <div class="tw"><div class="twh"><span class="t"><span class="chi">${ic('bank',22)}</span>Accounts</span><button class="btn s" data-act="addAcc">${ic('plus',16)} Account</button></div>
+   <div class="ov"><table><thead><tr><th>Account</th><th>Type</th><th class="num">Opening balance</th><th class="num">Current balance</th><th class="num">Last SMS balance</th><th></th></tr></thead><tbody>
+   ${bals.map(a=>{const sb=lastSmsBal(a.Name);return`<tr><td><b style="font-weight:600">${esc(a.Name)}</b>${a.SmsMatch?`<div class="mut">SMS: ${esc(a.SmsMatch)}</div>`:''}</td><td><span class="pill g">${esc(a.Type)}</span></td><td class="num">${fmt(a.OpeningBalance)}</td><td class="num ${a.balance<0?'neg':''}"><b>${fmt(a.balance)}</b></td>
+    <td class="num">${sb?`<span class="${Math.abs(sb.v-a.balance)>0.009?'neg':'pos'}" title="${Math.abs(sb.v-a.balance)>0.009?'Differs from the app – check opening balance or missing transactions':'Matches the app'}">${fmt(sb.v)}</span><div class="mut">${esc(niceDate(sb.d))}</div>`:'<span class="mut">—</span>'}</td>
+    <td><div class="btns" style="flex-wrap:nowrap;justify-content:flex-end"><button class="btn s ic" data-act="editAcc" data-id="${esc(a.ID)}" title="Edit">${ic('edit',16)}</button><button class="btn s ic d" data-act="delAcc" data-id="${esc(a.ID)}" title="Delete">${ic('trash',16)}</button></div></td></tr>`}).join('')}
+   </tbody></table></div><div class="mut" style="padding:14px 20px;border-top:1px solid var(--ln)">Opening balance is what the account held before your first recorded transaction.</div></div></div>
+  <div class="g2"><div class="tw"><div class="twh"><span class="t"><span class="chi red">${ic('down',22)}</span>Expense Categories</span><button class="btn s" data-act="addCat" data-id="Expense">${ic('plus',16)} Add</button></div>${catTbl('Expense')}</div>
+   <div class="tw"><div class="twh"><span class="t"><span class="chi green">${ic('up',22)}</span>Income Categories</span><button class="btn s" data-act="addCat" data-id="Income">${ic('plus',16)} Add</button></div>${catTbl('Income')}</div></div>`);
+ $('sf').onsubmit=e=>{e.preventDefault();const f=e.target;if(!f.CurrencySymbol.value.trim())return toast('Currency symbol is required.',true);
+  mutate('saveSettings',[{OwnerName:f.OwnerName.value,CurrencySymbol:f.CurrencySymbol.value}],'Settings saved')};
+}
+
+/* ================================================================
+   SMS Inbox
+   ================================================================ */
+const UNCAT='Uncategorised';
+const smsLog=()=>S.data.SmsLog||[];
+const toCategorise=()=>tx().filter(t=>t.Source==='SMS'&&t.Category===UNCAT).sort((a,b)=>String(b.Date).localeCompare(String(a.Date))||String(b.ID).localeCompare(String(a.ID)));
+const toReview=()=>smsLog().filter(l=>l.Status==='Review');
+const inboxCount=()=>S.data?toCategorise().length+toReview().length:0;
+const smsText=id=>{const l=smsLog().find(x=>String(x.ID)===String(id));return l?l.Message:''};
+function lastSmsBal(acc){const l=smsLog().find(x=>x.Account===acc&&x.Status==='Recorded'&&x.Balance!==''&&x.Balance!=null);return l?{v:n(l.Balance),d:l.SmsDate}:null}
+function ago(ms){ms=n(ms);if(!ms)return'—';const m=Math.round((Date.now()-ms)/6e4);if(m<1)return'just now';if(m<60)return m+' min ago';const h=Math.round(m/60);if(h<24)return h+' h ago';const d=Math.round(h/24);return d+' day'+(d===1?'':'s')+' ago'}
+function mirrorOf(t){const want=t.Type==='Income'?'Expense':'Income',d0=new Date(t.Date+'T00:00:00');
+ return tx().find(x=>x.ID!==t.ID&&x.Source==='SMS'&&x.Type===want&&x.Account!==t.Account&&Math.abs(n(x.Amount)-n(t.Amount))<0.005&&Math.abs(new Date(x.Date+'T00:00:00')-d0)<=3*864e5)}
+function pairCode(){const j=JSON.stringify({u:String(S.data.Settings.SmsUrl||'').trim(),k:S.data.Settings.AppKey||'',s:S.data.smsKey||''});return'MF1:'+btoa(unescape(encodeURIComponent(j)))}
+function smsUrl(){const base=String(S.data.Settings.SmsUrl||'').trim();return base?base+(base.includes('?')?'&':'?')+'key='+encodeURIComponent(S.data.smsKey):''}
+
+function pInbox(){
+ const C=toCategorise(),Rv=toReview(),L=smsLog(),ym=S.data.today.slice(0,7);
+ const capt=tx().filter(t=>t.Source==='SMS'&&String(t.Date).slice(0,7)===ym).length,last=L[0];
+ const tabs=[['cat','To categorise',C.length],['rev','Needs review',Rv.length],['all','All messages',L.length],['setup','Phone setup','']];
+ let body='';
+ if(S.iv==='cat')body=`<div class="tw"><div class="twh"><span class="t"><span class="chi amber">${ic('tag',22)}</span>Give these a category</span><span class="mut">Tick “always” and the app will categorise that payee by itself next time</span></div>
+  ${C.length?C.map(inboxItem).join(''):'<div class="empty">All caught up — nothing to categorise.<br>New SMS transactions that don\'t match a rule will appear here.</div>'}</div>`;
+ else if(S.iv==='rev')body=`<div class="tw"><div class="twh"><span class="t"><span class="chi red">${ic('alert',22)}</span>Messages that need a look</span><span class="mut">The app couldn't record these on its own</span></div>
+  ${Rv.length?Rv.map(l=>`<div class="ibx"><div><div class="it" style="justify-content:flex-start;gap:10px"><b>${esc(l.Sender||'Unknown sender')}</b><span class="mut">${ago(l.ReceivedAt)}</span></div>
+   <div class="sms">${esc(l.Message)}</div><div class="mut" style="margin-top:8px">${ic('alert',14)} ${esc(l.Note)}</div></div>
+   <div class="ctl"><div class="row2"><button class="btn p" style="flex:1" data-act="recSms" data-id="${esc(l.ID)}">${ic('check',18)} Record it</button><button class="btn" data-act="ignSms" data-id="${esc(l.ID)}">Ignore</button></div>
+   ${/account/i.test(l.Note)?`<button class="btn s" data-act="iv" data-id="setup">Set up “SMS match” for this sender</button>`:''}</div></div>`).join(''):'<div class="empty">Nothing needs review.</div>'}</div>`;
+ else if(S.iv==='all')body=`<div class="tw"><div class="twh"><span class="t"><span class="chi">${ic('msg',22)}</span>Message log</span><span class="mut">Last ${L.length} messages received</span></div>
+  ${L.length?`<div class="ov"><table><thead><tr><th>Received</th><th>From</th><th>Message</th><th>Status</th><th class="num">Amount</th></tr></thead><tbody>${L.map(l=>`<tr><td style="white-space:nowrap">${ago(l.ReceivedAt)}</td><td>${esc(l.Sender||'—')}</td>
+   <td><div class="trunc" title="${esc(l.Message)}">${esc(l.Message)}</div>${l.Note?`<div class="mut">${esc(l.Note)}</div>`:''}</td>
+   <td><span class="pill ${l.Status==='Recorded'?'in':l.Status==='Review'?'Medium':'g'}">${esc(l.Status)}</span></td>
+   <td class="num ${l.Type==='Income'?'pos':l.Type==='Expense'?'neg':''}">${l.Amount?fmt(l.Amount):''}</td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No messages yet. Set up your phone in the Phone setup tab.</div>'}</div>`;
+ else body=setupHtml();
+ V(head('SMS Inbox','Transactions captured from your MoMo and bank SMS alerts',`<button class="btn" data-act="refresh">${ic('swap',18)} Refresh</button>`)+
+  stats([stat('To categorise','tag',String(C.length),C.length?'Waiting for a category':'All caught up',C.length?'neg':'pos'),
+   stat('Needs review','alert',String(Rv.length),Rv.length?'Couldn\'t be recorded automatically':'Nothing to check'),
+   stat('Captured this month','msg',String(capt),'Transactions from SMS'),
+   stat('Last message','clock',last?ago(last.ReceivedAt):'None yet',last?esc(last.Sender||''):'Set up your phone to start')],true)+
+  `<div class="bar-row"><div class="sub">${tabs.map(([k,l,c])=>`<button class="${S.iv===k?'on':''}" data-act="iv" data-id="${k}">${l}${c!==''?`<span class="n">${c}</span>`:''}</button>`).join('')}</div></div>`+body);
+ if(S.iv==='setup')bindSetup();
+}
+function inboxItem(t){
+ const m=mirrorOf(t),kw=String(t.Payee||t.Description||'').trim(),list=cats(t.Type).filter(c=>c.Name!==UNCAT).map(c=>c.Name);
+ return`<div class="ibx" data-id="${esc(t.ID)}"><div>
+  <div class="it"><b>${esc(t.Description||t.Payee||'SMS transaction')}</b><span class="amt ${amtCls(t)}">${sign(t)}${fmt(t.Amount)}</span></div>
+  <div class="m mut" style="margin-top:4px">${niceDate(t.Date)} · ${typePill(t.Type)} · ${t.Type==='Income'?'into':'from'} <b style="color:var(--ink2)">${esc(t.Account)}</b></div>
+  ${smsText(t.SmsID)?`<details><summary>Show SMS</summary><div class="sms">${esc(smsText(t.SmsID))}</div></details>`:''}
+  ${m?`<div class="hint"><span>${ic('swap',16)} Looks like a transfer ${t.Type==='Income'?'from':'to'} your ${esc(m.Account)}</span><button class="btn s" data-act="mirror" data-id="${esc(t.ID)}" data-m="${esc(m.ID)}" data-acc="${esc(m.Account)}">Yes, it's a transfer</button></div>`:''}</div>
+  <div class="ctl"><div class="row2"><select class="ccat"><option value="">Choose a category…</option>${opts(list,'')}</select><button class="btn p" data-act="setCat" data-id="${esc(t.ID)}">Save</button></div>
+   <div class="row2" style="justify-content:space-between;align-items:center;flex-wrap:wrap">${kw?`<label class="chk"><input type="checkbox" class="crem" checked> Always for “${esc(kw.length>28?kw.slice(0,28)+'…':kw)}”</label>`:'<span></span>'}
+   <button class="btn s" data-act="ownTr" data-id="${esc(t.ID)}">${ic('swap',16)} Own transfer…</button></div></div></div>`;
+}
+/* Pecunia website: SMS capture is done by the Android app, so explain that instead of forwarder setup. */
+function pecuniaPhoneCard(){
+ return`<div class="card">${hd('phone','Pecunia on your phone','MoMo, bank and card SMS are recorded by the Pecunia Android app')}
+  <ol class="steps"><li>Install the <b>Pecunia</b> app on your Android phone.</li>
+   <li>Open it and choose <b>My Google account</b>, then sign in with <b>${esc((window.pecuniaUser&&pecuniaUser().email)||'the same Google account')}</b>.</li>
+   <li>Allow SMS access. Money messages are recorded automatically and show up here too.</li></ol>
+  <p class="mut" style="margin:0;line-height:1.5">Personal texts are ignored and never stored. Use <b>Try a message</b> to check how a message will be read.</p></div>`;
+}
+function setupHtml(){
+ const url=smsUrl(),R=(S.data.Rules||[]).slice().sort((a,b)=>String(a.Keyword).localeCompare(String(b.Keyword)));
+ const lp=S.data.lastPost;
+ const lpHtml=lp?`<div class="note ${lp.ok&&lp.status==='Recorded'?'good':lp.ok?'info':'bad'}"><b>Last message from your phone: ${ago(lp.at)}</b><br>
+   ${lp.ok?`Accepted — ${esc(lp.status)}${lp.account?' to '+esc(lp.account):''}${lp.note?' ('+esc(lp.note)+')':''}`:`Rejected — ${esc(lp.error||'unknown error')}`}
+   ${lp.sample?`<div class="sms" style="margin-top:8px">${esc(lp.sample)}</div>`:''}<div style="margin-top:6px;font-size:12.5px">Fields received: ${lp.fields&&lp.fields.length?lp.fields.map(esc).join(', '):'none'} · ${esc(lp.method||'')}</div></div>`
+  :`<div class="note bad"><b>No message has reached the app yet.</b><br>If your SMS app says it sent successfully, check that the phone deployment's access is <b>Anyone</b> and that it was deployed after you pasted the new Code.gs (Manage deployments → New version).</div>`;
+ return`<div class="g2"><div>
+ ${window.PECUNIA_WEB?pecuniaPhoneCard():`<div class="card">${hd('phone','Connect your phone','Forward MoMo and bank SMS to this app automatically',`<button class="btn s" data-act="refresh">${ic('swap',16)} Check again</button>`)}${lpHtml}
+  <ol class="steps">
+   <li>In Apps Script, click <b>Deploy → New deployment → Web app</b>. Set <i>Execute as</i> <b>Me</b> and <i>Who has access</i> <b>Anyone</b>, then copy its URL. (Keep using your existing link to open the app — this second link is only for your phone. The app itself still only opens for you.)</li>
+   <li>Paste that URL here and save:</li></ol>
+  <form id="smsUrlF" novalidate><div class="code" style="margin-bottom:16px"><input name="u" placeholder="https:&#47;&#47;script.google.com/macros/s/…/exec" value="${esc(S.data.Settings.SmsUrl||'')}"><button class="btn" type="submit">Save</button></div></form>
+  <ol class="steps" start="3">
+   <li>On your Android phone, install an SMS-forwarding app that can send SMS to a <b>webhook / URL</b> (for example “SMS Forwarder” or MacroDroid).</li>
+   <li>Create a rule for messages from <span class="mono">MobileMoney</span> and your bank, sending a <b>POST</b> request to:</li></ol>
+  ${url?`<div class="code" style="margin-bottom:12px"><input id="fwdUrl" readonly value="${esc(url)}"><button class="btn" data-act="copy" data-id="fwdUrl">${ic('copy',16)} Copy</button></div>`:'<div class="note info">Save your phone link in step 2 to see the full forwarding address here.</div>'}
+  <ol class="steps" start="5"><li>Set the request body to JSON (use the app's own placeholders for sender and message text):</li></ol>
+  <div class="code" style="margin-bottom:12px"><input id="fwdBody" readonly value='{"from":"%from%","text":"%text%"}'><button class="btn" data-act="copy" data-id="fwdBody">${ic('copy',16)} Copy</button></div>
+  <p class="mut" style="margin:0;line-height:1.5">Placeholder names differ by app — use whatever your app calls the sender and message. The secret key in the address stops anyone else posting to your app. <a href="#" class="lnk" data-act="newKey" style="color:var(--acc)">Generate a new key</a> if it's ever exposed.</p></div>
+ <div class="card">${hd('phone','Mobile app','Pair the My Finances Android app so it uses this Google sheet','','vio')}
+  ${url?`<p class="mut" style="margin:0 0 12px;line-height:1.5">Open this page on your phone, copy the pairing code and paste it into the app (Storage → Google account). The code lets the app read and change your finances, so keep it private.</p>
+   <div class="code" style="margin-bottom:12px"><input id="pairCode" readonly value="${esc(pairCode())}"><button class="btn" data-act="copy" data-id="pairCode">${ic('copy',16)} Copy</button></div>
+   <a href="#" class="lnk" data-act="newAppKey" style="color:var(--acc);font-size:14px">Unpair all apps (new app key)</a>`
+  :'<div class="note info">Save your phone link in step 2 first — the app connects through the same link.</div>'}</div>`}
+ <div class="card">${hd('bank','Match messages to accounts','Each SMS is filed under the account whose “SMS match” words appear in the sender or message','','green')}
+  <table><tbody>${S.data.Accounts.map(a=>`<tr><td><b style="font-weight:600">${esc(a.Name)}</b><div class="mut">${a.SmsMatch?esc(a.SmsMatch):'<span class="neg">No SMS match set</span>'}</div></td><td class="num"><button class="btn s" data-act="editAcc" data-id="${esc(a.ID)}">${ic('edit',16)} Edit</button></td></tr>`).join('')}</tbody></table>
+  <p class="mut" style="margin:14px 0 0;line-height:1.5">Use the SMS sender name (e.g. <span class="mono">MobileMoney</span>, <span class="mono">GCB</span>) and/or the last 4 digits of the account or card.</p></div>
+ </div><div>
+ <div class="card">${hd('wand','Try a message','Paste any SMS to see how the app reads it','','vio')}
+  <form id="tryF" novalidate>${fl('Sender (optional)','<input name="from" placeholder="e.g. MobileMoney">')}${fl('SMS text','<textarea name="text" rows="4" placeholder="Paste the SMS here…"></textarea>')}
+  <div class="btns"><button type="submit" class="btn">${ic('search',18)} Preview</button><button type="button" class="btn p" data-act="addSms">${ic('plus',18)} Add as transaction</button></div></form><div id="tryOut" style="margin-top:16px"></div></div>
+ <div class="tw"><div class="twh"><span class="t"><span class="chi amber">${ic('tag',22)}</span>Auto-category rules</span><button class="btn s" data-act="addRule">${ic('plus',16)} Rule</button></div>
+  ${R.length?`<div class="ov"><table><thead><tr><th>If the SMS mentions</th><th>Category</th><th></th></tr></thead><tbody>${R.map(r=>`<tr><td><b style="font-weight:600">${esc(r.Keyword)}</b></td><td><span class="dot" style="background:${esc(catColor(r.Category))}"></span>${esc(r.Category)}</td><td class="num"><button class="btn s ic d" data-act="delRule" data-id="${esc(r.ID)}" title="Delete">${ic('trash',16)}</button></td></tr>`).join('')}</tbody></table></div>`:'<div class="empty">No rules yet.</div>'}</div>
+ </div></div>`;
+}
+function bindSetup(){
+ if($('smsUrlF'))$('smsUrlF').onsubmit=e=>{e.preventDefault();const u=e.target.u.value.trim();if(u&&!/^https:\/\/script\.google\.com\/[a-z]/i.test(u))return toast('That should be a script.google.com web app link.',true);mutate('saveSettings',[{SmsUrl:u}],'Phone link saved')};
+ $('tryF').onsubmit=async e=>{e.preventDefault();const f=e.target;if(!f.text.value.trim())return toast('Paste an SMS first.',true);
+  try{const r=await run('testSms',f.text.value,f.from.value);$('tryOut').innerHTML=r.skip?`<div class="note info">The app would skip this: ${esc(r.skip)}.</div>`:!r.amount||!r.type?`<div class="note bad">The app couldn't tell the amount or direction — this would go to <b>Needs review</b>.</div>`:
+   `<div class="note ${r.account?'good':'bad'}"><b>${esc(r.type)}</b> of <b>${fmt(r.amount)}</b>${r.payee?` ${r.type==='Income'?'from':'to'} <b>${esc(r.payee)}</b>`:''}${r.kind==='cashout'?' (cash withdrawal → recorded as a transfer to Cash)':''}</div>
+    <div class="kv"><span>Account</span><b>${r.account?esc(r.account):'<span class="neg">No match – set SMS match</span>'}</b></div><div class="kv"><span>Category</span><b>${esc(r.category)}</b></div>
+    ${r.fee?`<div class="kv"><span>Fees &amp; tax</span><b>${fmt(r.fee)}</b></div>`:''}${r.balance!==null?`<div class="kv"><span>Balance in SMS</span><b>${fmt(r.balance)}</b></div>`:''}${r.txId?`<div class="kv"><span>Transaction ID</span><b>${esc(r.txId)}</b></div>`:''}`}catch(err){toast(err.message||String(err),true)}};
+}
+async function copyField(id){const el=$(id);if(!el)return;el.select();let ok=false;try{await navigator.clipboard.writeText(el.value);ok=true}catch(e){try{ok=document.execCommand('copy')}catch(x){}}toast(ok?'Copied':'Press Ctrl+C to copy',!ok)}
+
+/* ================================================================
+   Modal forms (projects, purchases, accounts, categories)
+   ================================================================ */
+function fieldHtml(f){const v=f.value==null?'':f.value;let h;
+ if(f.type==='select')h=`<select name="${f.name}">${opts(f.options||[],v)}</select>`;
+ else if(f.type==='textarea')h=`<textarea name="${f.name}" rows="3" placeholder="${esc(f.placeholder||'')}">${esc(v)}</textarea>`;
+ else h=`<input name="${f.name}" type="${f.type||'text'}" value="${esc(v)}" ${f.type==='number'?'step="0.01" inputmode="decimal"'+(f.min!==undefined?` min="${f.min}"`:''):''} placeholder="${esc(f.placeholder||'')}">`;
+ return fl(esc(f.label),h,f.full?'full':'')}
+function formModal(icon,title,sub,fields,o={}){return new Promise(res=>{const m=$('modal');
+ m.innerHTML=`<div class="mc">${hd(icon,esc(title),sub||'','',o.danger?'red':'')}${o.message?`<p>${o.message}</p>`:''}<form id="mf" novalidate>${fields.length?`<div class="grid">${fields.map(fieldHtml).join('')}</div>`:''}
+  <div class="btns end"><button type="button" class="btn" id="mx">Cancel</button><button type="submit" class="btn ${o.danger?'dd':'p'}">${esc(o.submit||'Save')}</button></div></form></div>`;
+ m.classList.add('open');const f=$('mf');
+ const close=v=>{m.classList.remove('open');m.innerHTML='';document.removeEventListener('keydown',key);res(v)},key=e=>{if(e.key==='Escape')close(null)};
+ document.addEventListener('keydown',key);$('mx').onclick=()=>close(null);m.onclick=e=>{if(e.target===m)close(null)};
+ f.onsubmit=e=>{e.preventDefault();const miss=fields.find(x=>x.required&&!String(f.elements[x.name].value).trim());
+  if(miss){toast(miss.label+' is required.',true);f.elements[miss.name].focus();return}
+  const v={};fields.forEach(x=>v[x.name]=f.elements[x.name].value);close(v)};
+ const first=f.querySelector('input,select,textarea');if(first)first.focus()})}
+const confirmModal=(t,msg,btn)=>formModal('trash',t,'This cannot be undone',[],{message:msg,submit:btn||'Delete',danger:true});
+
+async function projectForm(p={}){const v=await formModal('target',p.ID?'Edit Project':'New Project','A bigger plan with a budget and target date',[
+ {name:'Name',label:'Project name',value:p.Name,required:true,full:true,placeholder:'e.g. Home solar system'},
+ {name:'Budget',label:`Total budget (${sym()})`,type:'number',min:0,value:p.Budget,placeholder:'Blank = sum of its items'},
+ {name:'SetAside',label:'Already saved',type:'number',min:0,value:p.SetAside,placeholder:'0.00'},
+ {name:'StartDate',label:'Start date',type:'date',value:p.StartDate||S.data.today},{name:'TargetDate',label:'Target date',type:'date',value:p.TargetDate},
+ {name:'Priority',label:'Priority',type:'select',options:PRIORITIES,value:p.Priority||'Medium'},{name:'Status',label:'Status',type:'select',options:PROJECT_STATUSES,value:p.Status||'Planned'},
+ {name:'Description',label:'Notes',type:'textarea',value:p.Description,full:true,placeholder:'What it involves, quotes received…'}]);
+ if(v)mutate('saveProject',[{...v,ID:p.ID||''}],p.ID?'Project updated':'Project created')}
+async function purchaseForm(x={},pid){const projects=S.data.Projects.filter(p=>openProject(p)||String(p.ID)===String(x.ProjectID));
+ const v=await formModal('cart',x.ID?'Edit Planned Purchase':'Plan a Purchase','Something you intend to buy',[
+ {name:'Item',label:'Item',value:x.Item,required:true,full:true,placeholder:'e.g. 5kVA inverter'},
+ {name:'EstCost',label:`Estimated cost (${sym()})`,type:'number',min:0,value:x.EstCost,required:true,placeholder:'0.00'},
+ {name:'SavedSoFar',label:'Saved so far',type:'number',min:0,value:x.SavedSoFar,placeholder:'0.00'},
+ {name:'TargetDate',label:'Buy by',type:'date',value:x.TargetDate},{name:'Priority',label:'Priority',type:'select',options:PRIORITIES,value:x.Priority||'Medium'},
+ {name:'Status',label:'Status',type:'select',options:PURCHASE_STATUSES,value:x.Status||'Planned'},
+ {name:'ProjectID',label:'Part of project',type:'select',options:[{value:'',label:'— None —'}].concat(projects.map(p=>({value:p.ID,label:p.Name}))),value:x.ProjectID||pid||''},
+ {name:'Notes',label:'Notes',type:'textarea',value:x.Notes,full:true,placeholder:'Shop, model, link…'}]);
+ if(v)mutate('savePurchase',[{...v,ID:x.ID||''}],x.ID?'Purchase updated':'Purchase planned')}
+async function catForm(c={},ty){const v=await formModal('tag',c.ID?'Edit Category':'New Category','Used to group income and expenses',[
+ {name:'Name',label:'Name',value:c.Name,required:true,full:true},{name:'Type',label:'Type',type:'select',options:['Expense','Income'],value:c.Type||ty||'Expense'},
+ {name:'Color',label:'Colour',type:'color',value:c.Color||PALETTE[Math.floor(Math.random()*PALETTE.length)]}].concat(c.ID?[]:
+ [{name:'MonthlyBudget',label:`Monthly limit (${sym()}) — expenses only`,type:'number',min:0,full:true,placeholder:'Leave blank for no limit'}]),
+ c.ID&&c.Type==='Expense'?{message:'To change this category\'s monthly limit, use <b>Set limit</b> on the Budgets page — changes apply from the month you choose onwards.'}:{});
+ if(!v)return;if(v.Type==='Income')v.MonthlyBudget=0;mutate('saveCategory',[{...v,ID:c.ID||''}],'Category saved')}
+async function accForm(a={}){const v=await formModal('bank',a.ID?'Edit Account':'New Account','Cash, mobile money, bank or savings',[
+ {name:'Name',label:'Account name',value:a.Name,required:true,full:true,placeholder:'e.g. MTN MoMo, GCB Current'},
+ {name:'Type',label:'Type',type:'select',options:ACCOUNT_TYPES,value:a.Type||'Bank'},{name:'OpeningBalance',label:`Opening balance (${sym()})`,type:'number',value:a.OpeningBalance||0},
+ {name:'SmsMatch',label:'SMS match (comma-separated)',value:a.SmsMatch,full:true,placeholder:'e.g. MobileMoney  ·  GCB, 4521 (sender name or last 4 digits)'}]);
+ if(v)mutate('saveAccount',[{...v,ID:a.ID||''}],'Account saved')}
+function csv(){const r=filteredTx();if(!r.length)return toast('Nothing to export',true);
+ const k=['Date','Type','Category','Amount','Account','ToAccount','Description'],q=v=>'"'+String(v??'').replace(/"/g,'""')+'"';
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([[k.join(','),...r.map(x=>k.map(c=>q(x[c])).join(','))].join('\n')],{type:'text/csv'}));
+ a.download='transactions-'+(S.f.all?'all':S.month)+'.csv';a.click()}
+
+/* ================================================================
+   Actions
+   ================================================================ */
+const A={
+ go:id=>go(id),menu:id=>menu(id),
+ prevMonth:()=>{S.month=addMonths(S.month,-1);render()},nextMonth:()=>{S.month=addMonths(S.month,1);render()},
+ quickAdd:()=>{S.edit=null;S.draft=null;if(S.tab!=='tx')go('tx');else renderTxForm();setTimeout(()=>{const f=$('txf');if(f){f.scrollIntoView({behavior:'smooth',block:'start'});f.elements.Amount.focus()}},50)},
+ txType:id=>{S.draft=readTxForm();S.txType=id;renderTxForm()},
+ cancelEdit:()=>{S.edit=null;S.draft=null;renderTxForm()},
+ editTx:id=>{const t=byId('Transactions',id);if(!t)return;S.edit=t;S.draft=null;S.txType=t.Type;renderTxForm();$('main').scrollTo({top:0,behavior:'smooth'})},
+ delTx:async id=>{const t=byId('Transactions',id);if(await confirmModal('Delete Transaction?',`<b>${esc(t.Description||t.Category)}</b> — ${fmt(t.Amount)} on ${niceDate(t.Date)}`)){if(S.edit&&S.edit.ID===id)S.edit=null;mutate('deleteTransaction',[id],'Transaction deleted')}},
+ csv:()=>csv(),
+ iv:id=>{S.iv=id;render()},
+ refresh:async()=>{try{S.data=await run('refreshData');render();toast('Up to date')}catch(e){toast(e.message||String(e),true)}},
+ setCat:(id,b)=>{const row=b.closest('.ibx'),cat=row.querySelector('.ccat').value,rem=row.querySelector('.crem');if(!cat)return toast('Choose a category first.',true);
+  const t=byId('Transactions',id),kw=rem&&rem.checked?String(t.Payee||t.Description||'').trim():'';mutate('categoriseTx',[id,cat,kw],kw?'Saved — future “'+kw+'” messages will be categorised automatically':'Category saved')},
+ mirror:(id,b)=>mutate('makeTransfer',[id,b.dataset.acc,b.dataset.m],'Recorded as a transfer between your accounts'),
+ ownTr:async id=>{const t=byId('Transactions',id),others=accNames().filter(a=>a!==t.Account);if(!others.length)return toast('Add your other accounts first.',true);
+  const v=await formModal('swap','Transfer Between Your Accounts',`${fmt(t.Amount)} ${t.Type==='Income'?'came into':'left'} ${esc(t.Account)}`,[{name:'Other',label:t.Type==='Income'?'It came from':'It went to',type:'select',options:others,full:true}],{submit:'Make it a transfer',message:'This isn\'t income or spending — just money moving between your own accounts.'});
+  if(!v)return;const m=mirrorOf(t);mutate('makeTransfer',[id,v.Other,m&&m.Account===v.Other?m.ID:''],'Recorded as a transfer')},
+ recSms:async id=>{const l=smsLog().find(x=>String(x.ID)===String(id));const allCats=cats('Expense').map(c=>({value:c.Name,label:c.Name+' (expense)'})).concat(cats('Income').map(c=>({value:c.Name,label:c.Name+' (income)'})));
+  const v=await formModal('check','Record This Message','Check the details the app picked up',[
+   {name:'Type',label:'Type',type:'select',options:['Expense','Income'],value:l.Type||'Expense'},{name:'Amount',label:`Amount (${sym()})`,type:'number',min:0,value:l.Amount,required:true},
+   {name:'Date',label:'Date',type:'date',value:l.SmsDate||S.data.today,required:true},{name:'Account',label:'Account',type:'select',options:accNames(),value:l.Account,required:true},
+   {name:'Category',label:'Category',type:'select',options:allCats,value:UNCAT,full:true},{name:'Description',label:'Description',value:l.Payee||'',full:true}],{submit:'Record',message:`<span class="sms" style="display:block">${esc(l.Message)}</span>`});
+  if(!v)return;const ok=cats(v.Type).some(c=>c.Name===v.Category);if(!ok)return toast('That category is for '+(v.Type==='Income'?'expenses':'income')+'.',true);mutate('recordFromSms',[id,v],'Recorded')},
+ ignSms:id=>mutate('ignoreSms',[id],'Ignored'),
+ copy:id=>copyField(id),
+ newAppKey:async()=>{if(await formModal('alert','Unpair the Mobile App?','The app will need the new pairing code',[],{submit:'Unpair',danger:true,message:'Use this if your phone was lost or the pairing code was shared. Afterwards paste the new code into the app.'}))mutate('resetAppKey',[],'App unpaired — copy the new pairing code into the app')},
+ newKey:async()=>{if(await formModal('alert','Generate a New Key?','Your phone will stop forwarding until you update it',[],{submit:'Generate',danger:true,message:'Use this if your forwarding address was shared by mistake. Afterwards, copy the new address into your SMS app.'}))mutate('resetSmsKey',[],'New key generated — update your phone')},
+ addSms:async()=>{const f=$('tryF');if(!f.text.value.trim())return toast('Paste an SMS first.',true);
+  try{const r=await run('addSms',f.text.value,f.from.value);S.data=r.data;const st=r.result.status;
+   toast(st==='Recorded'?'Added to '+r.result.account:st==='Duplicate'?'Already added before':st==='Ignored'?'Skipped: '+r.result.note:'Saved to Needs review',st!=='Recorded'&&st!=='Duplicate');
+   S.iv=st==='Recorded'?'cat':st==='Review'?'rev':S.iv;render()}catch(e){toast(e.message||String(e),true)}},
+ addRule:async()=>{const allCats=cats('Expense').filter(c=>c.Name!==UNCAT).map(c=>({value:c.Name,label:c.Name+' (expense)'})).concat(cats('Income').filter(c=>c.Name!==UNCAT).map(c=>({value:c.Name,label:c.Name+' (income)'})));
+  const v=await formModal('tag','New Auto-category Rule','When an SMS mentions this word, use this category',[{name:'Keyword',label:'Word or name in the SMS',required:true,full:true,placeholder:'e.g. KFC, Vodafone, school fees'},{name:'Category',label:'Category',type:'select',options:allCats,full:true}]);
+  if(v)mutate('saveRule',[v],'Rule added')},
+ delRule:id=>mutate('deleteRule',[id],'Rule deleted'),
+ setBudget:async id=>{const c=byId('Categories',id),m=S.month,cur=budgetFor(c,m);
+  const later=(S.data.Budgets||[]).filter(b=>b.Category===c.Name&&String(b.Month)>m).sort((a,b)=>String(a.Month).localeCompare(String(b.Month)))[0];
+  const v=await formModal('target','Monthly Limit',esc(c.Name)+' · from '+monthLabel(m)+' onwards',[{name:'MonthlyBudget',label:`Monthly limit (${sym()})`,type:'number',min:0,value:cur||'',required:true,full:true,placeholder:'0 = no limit'}],
+   {submit:'Save limit',message:`Applies to <b>${monthLabel(m)}</b> and every month after it${later?` until <b>${monthLabel(String(later.Month))}</b>, which has its own limit of ${fmt(later.Amount)}`:''}. Earlier months keep the limit they had.`});
+  if(v)mutate('setBudget',[c.Name,m,v.MonthlyBudget],'Limit saved from '+monthLabel(m)+' onwards')},
+ addCat:ty=>catForm({},ty),editCat:id=>catForm(byId('Categories',id)),
+ delCat:async id=>{const c=byId('Categories',id);if(await confirmModal('Delete Category?',`<b>${esc(c.Name)}</b> will be removed. Existing transactions keep their category name.`))mutate('deleteCategory',[id],'Category deleted')},
+ addAcc:()=>accForm(),editAcc:id=>accForm(byId('Accounts',id)),
+ delAcc:async id=>{const a=byId('Accounts',id);if(await confirmModal('Delete Account?',`Delete <b>${esc(a.Name)}</b>? This only works if it has no transactions.`))mutate('deleteAccount',[id],'Account deleted')},
+ pv:id=>{S.pv=id;render()},uv:id=>{S.uv=id;render()},
+ addProject:()=>projectForm(),editProject:id=>projectForm(byId('Projects',id)),
+ delProject:async id=>{const p=byId('Projects',id);if(await confirmModal('Delete Project?',`Delete <b>${esc(p.Name)}</b>? Its items and transactions stay, but are unlinked.`))mutate('deleteProject',[id],'Project deleted')},
+ fundProject:async id=>{const p=byId('Projects',id);const v=await formModal('wallet','Save Toward Project',esc(p.Name),[{name:'Amount',label:`Amount (${sym()}) — negative to withdraw`,type:'number',required:true,full:true,placeholder:'0.00'}],{submit:'Add savings'});
+  if(v)mutate('fundProject',[id,v.Amount],'Savings updated')},
+ addPurchase:pid=>purchaseForm({},pid),editPurchase:id=>purchaseForm(byId('Purchases',id)),
+ delPurchase:async id=>{const x=byId('Purchases',id);if(await confirmModal('Delete Planned Purchase?',`Delete <b>${esc(x.Item)}</b>?`))mutate('deletePurchase',[id],'Purchase deleted')},
+ fundPurchase:async id=>{const x=byId('Purchases',id);const v=await formModal('wallet','Save Toward Purchase',esc(x.Item),[{name:'Amount',label:`Amount (${sym()}) — negative to withdraw`,type:'number',required:true,full:true,placeholder:'0.00'}],{submit:'Add savings'});
+  if(v)mutate('fundPurchase',[id,v.Amount],'Savings updated')},
+ buyPurchase:async id=>{const x=byId('Purchases',id);const v=await formModal('check','Mark as Bought',esc(x.Item),[
+  {name:'Amount',label:`Actual price (${sym()})`,type:'number',min:0,value:x.EstCost,required:true},{name:'Date',label:'Date',type:'date',value:S.data.today,required:true},
+  {name:'Account',label:'Paid from',type:'select',options:accNames(),required:true},{name:'Category',label:'Category',type:'select',options:cats('Expense').map(c=>c.Name),required:true}],
+  {submit:'Record purchase',message:'This records the expense in your transactions and marks the item as bought.'});
+  if(v)mutate('markPurchaseBought',[id,v],'Purchase recorded')}
+};
+document.addEventListener('change',e=>{if(e.target.id==='month'&&e.target.value){S.month=e.target.value;render()}});
+document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||!A[b.dataset.act])return;e.preventDefault();A[b.dataset.act](b.dataset.id,b)});
+
+/* ================================================================
+   Boot
+   ================================================================ */
+$('mb').innerHTML=ic('menu',22);$('logo').innerHTML=ic('wallet',24);$('tbAdd').innerHTML=ic('plus',18)+'<span>Add transaction</span>';
+setInterval(async()=>{if(S.tab!=='inbox'||!S.data||document.hidden||BUSY||$('modal').classList.contains('open'))return;
+ const a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName))return;
+ try{const d=await run('refreshData');if(S.tab==='inbox'&&!$('modal').classList.contains('open')){S.data=d;render()}}catch(e){}},60000);
+(async function init(){
+ const slow=setTimeout(()=>{if(!S.data)V(`<div class="card"><div class="empty">Still loading… The first open after an update can take up to a minute while the data sheet is prepared.<br>If this doesn't change, reload the page.</div></div>`)},25000);
+ try{S.data=await run('getData');clearTimeout(slow);S.month=S.data.today.slice(0,7);render()}
+ catch(e){clearTimeout(slow);V(`<div class="card"><div class="empty"><b>Could not load your data</b><br>${esc((e&&e.message)||e)}</div></div>`)}})();
+})();
+</script>
+</body></html>
