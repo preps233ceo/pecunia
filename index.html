@@ -1460,6 +1460,9 @@ function matchAccount_(ss, sender, text, payee) {
   all.forEach(function (a) {
     const words = String(a.SmsMatch || '').split(',').map(function (w) { return w.trim().toLowerCase(); }).filter(String);
     let bySender = 0, byText = 0;
+    // The sender's name matching the account's own name counts like an SMS match word
+    const sn = s.replace(/[^a-z0-9]/g, ''), an = String(a.Name || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+    if (sn.length >= 3 && an.length >= 3 && (sn === an || sn.indexOf(an) > -1 || an.indexOf(sn) > -1)) bySender = 2;
     words.forEach(function (w) {
       if (s && (s.indexOf(w) > -1 || (w.indexOf(s) > -1 && s.length >= 3))) bySender = 2;
       if (/^\d{3,}$/.test(w)) { if (new RegExp('(^|\\D)' + w + '(\\D|$)').test(t)) byText = Math.max(byText, 3); }   // also inside XXXX4521
@@ -1717,10 +1720,14 @@ function categoriseTx(id, category, keyword) {
   upsert_('Transactions', { ID: id, Category: category });
   const kw = str_(keyword);
   if (kw) {
-    const exists = readTable_(ss, 'Rules').some(function (r) { return String(r.Keyword).toLowerCase() === kw.toLowerCase(); });
-    if (!exists) upsert_('Rules', { Keyword: txt_(kw), Category: category });
+    // one rule per keyword: a new choice replaces the old category
+    const rule = readTable_(ss, 'Rules').filter(function (r) { return String(r.Keyword).toLowerCase() === kw.toLowerCase(); })[0];
+    if (rule) upsert_('Rules', { ID: rule.ID, Category: category });
+    else upsert_('Rules', { Keyword: txt_(kw), Category: category });
+    const sms = {};
+    readTable_(ss, 'SmsLog').forEach(function (l) { sms[l.ID] = l.Message; });
     readTable_(ss, 'Transactions').forEach(function (x) {
-      if (x.Category === UNCAT && x.Type === t.Type && wordIn_(kw.toLowerCase(), [x.Payee, x.Description].join(' '))) {
+      if (x.Category === UNCAT && x.Type === t.Type && wordIn_(kw.toLowerCase(), [x.Payee, x.Description, sms[x.SmsID] || ''].join(' '))) {
         upsert_('Transactions', { ID: x.ID, Category: category });
       }
     });
