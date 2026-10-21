@@ -345,20 +345,47 @@ window.PECUNIA_WEB = true;
     });
   }
 
+  /* The website is part of Pecunia Pro: it opens only the sheet the Android app created or
+     connected (app=android on the file) while Pro is unlocked (pro=1) or the trial runs
+     (proUntil >= today). It never creates a sheet itself. */
   function findOrCreateSheet() {
     var q = encodeURIComponent("appProperties has { key='pecunia' and value='data' } and trashed=false");
-    return api('GET', DRIVE + '/files?q=' + q + '&spaces=drive&fields=files(id,webViewLink)&orderBy=createdTime').then(function (r) {
-      if (r.files && r.files.length) return r.files[0];
-      return api('POST', DRIVE + '/files?fields=id,webViewLink', {
-        name: 'Pecunia – Data',
-        mimeType: 'application/vnd.google-apps.spreadsheet',
-        appProperties: { pecunia: 'data' },
-        description: 'Your Pecunia data. Used by the Pecunia app and website.'
-      });
-    }).then(function (f) {
+    return api('GET', DRIVE + '/files?q=' + q + '&spaces=drive&fields=files(id,webViewLink,appProperties)&orderBy=createdTime').then(function (r) {
+      var files = r.files || [];
+      var f = null;
+      for (var i = 0; i < files.length; i++) {
+        if (files[i].appProperties && files[i].appProperties.app === 'android') { f = files[i]; break; }
+      }
+      if (!f) { var e = new Error('locked'); e.locked = true; e.hasSheet = files.length > 0; throw e; }
+      var p = f.appProperties, today = new Date().toISOString().slice(0, 10);
+      if (!(p.pro === '1' || (p.proUntil && p.proUntil >= today))) {
+        var e2 = new Error('locked'); e2.locked = true; e2.needsPro = true; throw e2;
+      }
       sheetId = f.id;
       sheetUrl = f.webViewLink || ('https://docs.google.com/spreadsheets/d/' + f.id + '/edit');
     });
+  }
+
+  var PLAY_URL = CFG.playUrl || 'https://play.google.com/store/apps/details?id=com.preps233.pecunia';
+  function showLocked(hasSheet, needsPro) {
+    showOverlay('Pecunia on the web',
+      needsPro ? 'Pecunia on the web is part of <b>Pecunia Pro</b>. Unlock Pro in the app (More → Pecunia Pro), open the app once, then try again.'
+      : 'Pecunia on the web works together with the Pecunia app for Android. ' +
+        (hasSheet ? 'Open the latest Pecunia app on your phone once, signed in with <b>' + esc(userEmail) + '</b>, then try again.'
+                  : 'Get the app, choose <b>My Google account</b> and sign in with <b>' + esc(userEmail) + '</b>. Then come back here.'),
+      needsPro ? 'Open Pecunia on Google Play' : 'Get Pecunia on Google Play', function () { window.open(PLAY_URL, '_blank', 'noopener'); });
+    var card = overlay.querySelector('.card');
+    var more = document.createElement('div');
+    more.style.cssText = 'display:flex;gap:10px;margin-top:12px';
+    more.innerHTML = '<button class="btn" id="pecuniaRetry" style="flex:1;pointer-events:auto;opacity:1">Try again</button>' +
+                     '<button class="btn" id="pecuniaOut" style="flex:1;pointer-events:auto;opacity:1">Use another account</button>';
+    card.appendChild(more);
+    document.getElementById('pecuniaRetry').onclick = function () { afterToken().catch(onStartError); };
+    document.getElementById('pecuniaOut').onclick = function () { window.pecuniaSignOut(); };
+  }
+  function onStartError(e) {
+    if (e && e.locked) return showLocked(e.hasSheet, e.needsPro);
+    token = null; tokenExp = 0; gate(esc(e && e.message));
   }
 
   /* ------------------------------------------------------------------ */
@@ -582,9 +609,7 @@ window.PECUNIA_WEB = true;
 
   function signIn() {
     showOverlay('Signing in…', 'Finish signing in in the Google window.');
-    requestToken(ls('pecunia_email') ? '' : 'select_account').then(afterToken).catch(function (e) {
-      gate(esc(e.message));
-    });
+    requestToken(ls('pecunia_email') ? '' : 'select_account').then(afterToken).catch(onStartError);
   }
 
   function gate(error) {
@@ -605,7 +630,7 @@ window.PECUNIA_WEB = true;
     var t = ss('pecunia_token'), exp = Number(ss('pecunia_exp') || 0);
     if (t && Date.now() < exp) {
       token = t; tokenExp = exp;
-      afterToken().catch(function (e) { token = null; tokenExp = 0; gate(esc(e.message)); });
+      afterToken().catch(onStartError);
     } else {
       gate();
     }
