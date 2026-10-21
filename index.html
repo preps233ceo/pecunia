@@ -1426,7 +1426,8 @@ function recordParsed_(ss, p, account, date, smsId, text) {
   } else {
     rec = Object.assign({}, base, { ID: newId_('Transactions'), Type: p.type, Amount: p.amount,
       Category: ruleCategory_(ss, p.type, [p.payee, p.ref, text].join(' ')) || UNCAT,
-      Description: txt_(p.payee || p.ref || (/\bcard\b/i.test(text) ? (p.type === 'Income' ? 'Card top-up' : 'Card payment') : (p.type === 'Income' ? 'Money received' : 'Payment'))) });
+      // The SMS itself is the description (the payee stays in its own column).
+      Description: txt_(smsDescription_(text) || p.payee || p.ref || (/\bcard\b/i.test(text) ? (p.type === 'Income' ? 'Card top-up' : 'Card payment') : (p.type === 'Income' ? 'Money received' : 'Payment'))) });
   }
   appendObj_(ss, 'Transactions', rec);
   if (p.fee > 0) {
@@ -1520,7 +1521,7 @@ function parseSms_(text) {
   if (/\b(failed|unsuccessful|was declined|has been declined|not successful|insufficient (funds|balance))\b/i.test(t)) { r.skip = 'Failed or declined transaction'; return r; }
 
   // every money amount, with the words just before it
-  const CUR = '(?:GHS|GH¢|GH₵|GHC|GH\\s?C|\\bGH\\b|₵|¢|ghana\\s+cedis?|\\bcedis?\\b)';
+  const CUR = '(?:GHS|GH¢|GH₵|GHC|GH\\s?C|\\bGH\\b|₵|¢|ghana\\s+cedis?|\\bcedis?\\b|NGN|₦|naira|KES|KSh|Kshs?|UGX|USh|TZS|TSh|RWF|FRw|ZMW|ZAR|XOF|XAF|F\\s?CFA|CFA|USD|US\\$|\\$|GBP|£|EUR|€|\\bR(?=\\d)|\\bK(?=\\d)|shillings?|kwacha)';
   const re = new RegExp(CUR + '\\s*:?\\s*([\\d,]*\\d(?:\\.\\d{1,2})?)|([\\d,]*\\d\\.\\d{2})\\s*' + CUR +
     '|\\b(?:amt|amount)(?:\\s+of)?\\s*[:=]?\\s*([\\d,]*\\d(?:\\.\\d{1,2})?)|\\b(?:fee|tax|e-?levy|levy|charges?)\\b[a-z ]*[:=]\\s*([\\d,]*\\d\\.\\d{1,2})', 'gi');
   const am = [];
@@ -1601,7 +1602,7 @@ function api_(body) {
       saveAccount: saveAccount, deleteAccount: deleteAccount,
       saveProject: saveProject, fundProject: fundProject, deleteProject: deleteProject,
       savePurchase: savePurchase, fundPurchase: fundPurchase, markPurchaseBought: markPurchaseBought, deletePurchase: deletePurchase,
-      saveSettings: saveSettings, categoriseTx: categoriseTx, makeTransfer: makeTransfer,
+      saveSettings: saveSettings, categoriseTx: categoriseTx, makeTransfer: makeTransfer, setTxDescription: setTxDescription,
       recordFromSms: recordFromSms, ignoreSms: ignoreSms, saveRule: saveRule, deleteRule: deleteRule,
       testSms: testSms, apiIngest: apiIngest, apiIngestMany: apiIngestMany, importAll: importAll
     };
@@ -1735,13 +1736,28 @@ function makeTransfer(id, otherAccount, mirrorId) {
   if (!t) throw new Error('Transaction not found.');
   if (t.Type === 'Transfer') return getData();
   const other = str_(otherAccount);
-  if (!other || other === t.Account) throw new Error('Choose your other account.');
+  if (!other) throw new Error('Choose your other account.');   // the same account is allowed (bank → its own card)
   if (!getAccountByName_(other)) throw new Error('Account not found.');
   const from = t.Type === 'Expense' ? t.Account : other;
   const to = t.Type === 'Expense' ? other : t.Account;
   upsert_('Transactions', { ID: id, Type: 'Transfer', Category: 'Transfer', Account: from, ToAccount: to, ProjectID: '' });
   if (str_(mirrorId) && mirrorId !== id) deleteById_('Transactions', mirrorId);
   return getData();
+}
+
+/** Change a transaction's description (used by the phone app's SMS Inbox). */
+function setTxDescription(id, text) {
+  auth_();
+  const t = getById_('Transactions', id);
+  if (!t) throw new Error('Transaction not found.');
+  upsert_('Transactions', { ID: id, Description: txt_(String(text || '').trim()) });
+  return getData();
+}
+
+/** An SMS as a one-line description, at most 300 characters. */
+function smsDescription_(text) {
+  const one = String(text || '').replace(/\s+/g, ' ').trim();
+  return one.length > 300 ? one.slice(0, 297) + '…' : one;
 }
 
 function getAccountByName_(name) {
