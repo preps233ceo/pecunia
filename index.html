@@ -1426,8 +1426,7 @@ function recordParsed_(ss, p, account, date, smsId, text) {
   } else {
     rec = Object.assign({}, base, { ID: newId_('Transactions'), Type: p.type, Amount: p.amount,
       Category: ruleCategory_(ss, p.type, [p.payee, p.ref, text].join(' ')) || UNCAT,
-      // The SMS itself is the description (the payee stays in its own column).
-      Description: txt_(smsDescription_(text) || p.payee || p.ref || (/\bcard\b/i.test(text) ? (p.type === 'Income' ? 'Card top-up' : 'Card payment') : (p.type === 'Income' ? 'Money received' : 'Payment'))) });
+      Description: txt_(p.payee || p.ref || (/\bcard\b/i.test(text) ? (p.type === 'Income' ? 'Card top-up' : 'Card payment') : (p.type === 'Income' ? 'Money received' : 'Payment'))) });
   }
   appendObj_(ss, 'Transactions', rec);
   if (p.fee > 0) {
