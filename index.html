@@ -177,6 +177,11 @@ window.PECUNIA_WEB = true;
  * the data lives in a "Pecunia – Data" Google Sheet in the signed-in user's own Drive,
  * reached with Google sign-in and the Sheets/Drive APIs (drive.file scope: the app can only
  * see files it created).
+ *
+ * Local first: the browser keeps a working copy (IndexedDB), so every action is instant.
+ * The sheet is brought up to date in the background: pull it, merge record by record with
+ * what changed here (changes made on the phone are kept), then write back only the tabs
+ * that changed. Same rules as the Android app.
  */
 (function () {
   'use strict';
@@ -558,19 +563,246 @@ window.PECUNIA_WEB = true;
   /* google.script.run: each call loads the sheet, runs Code.gs, saves  */
   /* ------------------------------------------------------------------ */
 
+  /* ---------------- working copy in the browser ---------------- */
+
+  var LOCAL = null;          // Book the actions run against
+  var BASE = null;           // {title: rows} as last agreed with the sheet
+  var pending = false;       // changes here not yet on the sheet
+  var version = 0;           // bumped on every local change
+  var syncing = false, syncTimer = null, queuedSync = null, syncChain = Promise.resolve();
+
+  function clone(x) { return x === undefined ? null : JSON.parse(JSON.stringify(x)); }
+  function tabsOf(book) { var o = {}; book.sheets.forEach(function (s) { o[s.title] = clone(s.d); }); return o; }
+  function bookFrom(tabs, ids) {
+    var list = Object.keys(tabs).map(function (t) { return new Sheet(null, t, ids && ids.hasOwnProperty(t) ? ids[t] : null, clone(tabs[t])); });
+    var b = new Book(list);
+    list.forEach(function (s) { s.book = b; });
+    return b;
+  }
+
+  /* IndexedDB (falls back to memory only, e.g. in a private window) */
+  var DBP = null;
+  function idb() {
+    if (!DBP) DBP = new Promise(function (res, rej) {
+      try {
+        var r = indexedDB.open('pecunia', 1);
+        r.onupgradeneeded = function () { r.result.createObjectStore('kv'); };
+        r.onsuccess = function () { res(r.result); };
+        r.onerror = function () { rej(r.error); };
+      } catch (e) { rej(e); }
+    });
+    return DBP;
+  }
+  function idbGet(k) {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        var q = db.transaction('kv').objectStore('kv').get(k);
+        q.onsuccess = function () { res(q.result || null); };
+        q.onerror = function () { res(null); };
+      });
+    }).catch(function () { return null; });
+  }
+  function idbPut(k, v) {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        var t = db.transaction('kv', 'readwrite');
+        t.objectStore('kv').put(v, k);
+        t.oncomplete = function () { res(true); };
+        t.onerror = function () { res(false); };
+      });
+    }).catch(function () { return false; });
+  }
+  function idbClear() {
+    return idb().then(function (db) {
+      return new Promise(function (res) {
+        var t = db.transaction('kv', 'readwrite');
+        t.objectStore('kv').clear();
+        t.oncomplete = t.onerror = function () { res(); };
+      });
+    }).catch(function () {});
+  }
+
+  var writing = Promise.resolve();
+  function persist() {
+    if (!LOCAL || !sheetId) return writing;
+    var snap = { v: 1, sheetId: sheetId, sheetUrl: sheetUrl, tz: sheetTz, email: userEmail, tabs: tabsOf(LOCAL), base: BASE, pending: pending };
+    writing = writing.then(function () { return idbPut('book:' + sheetId, snap); });
+    ls('pecunia_last', JSON.stringify({ email: userEmail, sheetId: sheetId }));
+    return writing;
+  }
+
+  /* ---------------- merging, record by record ---------------- */
+
+  function norm(v) {
+    if (v === null || v === undefined) return '';
+    if (typeof v === 'number') return isFinite(v) ? String(v) : '';
+    if (typeof v === 'boolean') return String(v);
+    var t = String(v).trim();
+    return t.charAt(0) === "'" ? t.slice(1) : t;
+  }
+  function recordsOf(rows) {
+    rows = rows || [];
+    var head = (rows[0] || []).map(function (h) { return norm(h); });
+    var list = [];
+    for (var i = 1; i < rows.length; i++) {
+      var r = rows[i] || [], rec = {}, any = false;
+      for (var j = 0; j < head.length; j++) {
+        if (!head[j]) continue;
+        var v = r[j] === undefined || r[j] === null ? '' : r[j];
+        if (norm(v) !== '') any = true;
+        rec[head[j]] = v;
+      }
+      if (any) list.push(rec);
+    }
+    return { head: head.filter(function (h) { return h; }), list: list };
+  }
+  function sigRec(rec, cols) { return JSON.stringify(cols.map(function (c) { return norm(rec[c]); })); }
+  function sigRows(rows) {
+    var R = recordsOf(rows);
+    return JSON.stringify([R.head, R.list.map(function (x) { return sigRec(x, R.head); })]);
+  }
+
+  /** Three-way merge of one tab: b = last agreed, l = here, r = the sheet now.
+      Whatever changed on one side wins; if both changed a record, this side wins;
+      an edit is never lost to a delete. Records are matched by the first column (ID / Key). */
+  function mergeTab(b, l, r) {
+    if (!r) return l;
+    if (!l) return r;
+    var B = recordsOf(b), L = recordsOf(l), R = recordsOf(r);
+    var cols = L.head.slice();
+    R.head.forEach(function (h) { if (cols.indexOf(h) < 0) cols.push(h); });
+    if (!cols.length) return r;
+    var key = cols[0];
+    function index(X) { var m = {}; X.list.forEach(function (x) { var k = norm(x[key]); if (k) m[k] = x; }); return m; }
+    var bi = index(B), li = index(L), ri = index(R);
+    function sig(x) { return x ? sigRec(x, cols) : null; }
+    function pick(id) {
+      var bs = sig(bi[id]), lsg = sig(li[id]), rs = sig(ri[id]);
+      if (lsg === bs) return ri[id] || null;
+      if (rs === bs) return li[id] || null;
+      return li[id] || ri[id] || null;
+    }
+    var out = [], seen = {};
+    [L, R].forEach(function (side) {
+      side.list.forEach(function (x) {
+        var id = norm(x[key]);
+        if (!id) { if (side === L) out.push(x); return; }
+        if (seen[id]) return;
+        seen[id] = true;
+        var p = pick(id);
+        if (p) out.push(p);
+      });
+    });
+    return [cols].concat(out.map(function (x) { return cols.map(function (c) { return x[c] === undefined || x[c] === null ? '' : x[c]; }); }));
+  }
+
+  /* ---------------- background sync ---------------- */
+
+  function scheduleSync(ms) {
+    clearTimeout(syncTimer);
+    syncTimer = setTimeout(function () { sync(); }, ms === undefined ? 1500 : ms);
+  }
+
+  /** Bring the sheet and this browser up to date with each other. */
+  function sync() {
+    clearTimeout(syncTimer);
+    if (queuedSync) return queuedSync;
+    // Own lane: the user's actions never wait for the network. The merge itself runs in one
+    // go (no waiting inside it), so it can't interleave with an action.
+    var job = syncChain.then(function () { return ready; }).then(function () {
+      queuedSync = null;
+      if (!LOCAL) return;
+      syncing = true;
+      return loadBook().then(function (remote) {
+        var remoteTabs = tabsOf(remote), ids = {};
+        remote.sheets.forEach(function (s) { ids[s.title] = s.id; });
+        var localTabs = tabsOf(LOCAL);
+        var base = BASE || {};
+        var merged = {}, titles = Object.keys(localTabs);
+        Object.keys(remoteTabs).forEach(function (t) { if (titles.indexOf(t) < 0) titles.push(t); });
+        var fromSheet = false;
+        titles.forEach(function (t) {
+          merged[t] = mergeTab(base[t] || null, localTabs[t] || null, remoteTabs[t] || null);
+          if (!localTabs[t] || sigRows(merged[t]) !== sigRows(localTabs[t])) fromSheet = true;
+        });
+        if (fromSheet) LOCAL = bookFrom(merged, ids);
+        // write back only the tabs that differ from the sheet
+        var out = bookFrom(merged, ids);
+        out.sheets.forEach(function (s) {
+          if (!remoteTabs.hasOwnProperty(s.title)) { s.id = null; s.dirty = true; out.added.push(s); }
+          else s.dirty = sigRows(s.d) !== sigRows(remoteTabs[s.title]);
+        });
+        var versionAtPush = version;
+        sheetTz = remote.getSpreadsheetTimeZone();
+        return saveBook(out).then(function () {
+          BASE = clone(merged);
+          pending = version !== versionAtPush;    // changed again while writing
+          persist();
+          if (pending) scheduleSync();
+          if (fromSheet) refreshView();
+        });
+      });
+    }).then(function () { syncing = false; }, function (e) {
+      syncing = false;
+      if (window.console) console.warn('Pecunia sync:', e && e.message);
+      if (pending) scheduleSync(60000);
+    });
+    queuedSync = job;
+    syncChain = job.catch(function () {});
+    return job;
+  }
+
+  /** Show changes that came from the sheet (e.g. made on the phone), unless the user is mid-edit. */
+  function refreshView() {
+    if (typeof window.pecuniaApply !== 'function') return;
+    var busy = document.querySelector('#modal.open');
+    var a = document.activeElement;
+    if (busy || (a && /INPUT|SELECT|TEXTAREA/.test(a.tagName))) { setTimeout(refreshView, 4000); return; }
+    callServer('getData', []).then(function (d) { window.pecuniaApply(d); }, function () {});
+  }
+
+  /* ---------------- google.script.run: runs on the working copy ---------------- */
+
   var queue = Promise.resolve();
   function callServer(fn, args) {
     var job = queue.then(function () { return ready; }).then(function () {
-      return loadBook();
-    }).then(function (book) {
-      CUR = book;
       if (typeof window[fn] !== 'function') throw new Error('Unknown action: ' + fn);
-      var result = window[fn].apply(null, args);
-      return saveBook(book).then(function () { return result === undefined ? null : JSON.parse(JSON.stringify(result)); });
+      var before = tabsOf(LOCAL);
+      CUR = LOCAL;
+      var result;
+      try {
+        result = window[fn].apply(null, args);
+      } catch (e) {
+        LOCAL = bookFrom(before, idsOf(LOCAL));   // undo a half-finished change
+        throw e;
+      }
+      var changed = LOCAL.added.length > 0 || LOCAL.sheets.some(function (s) { return s.dirty; });
+      if (changed) {
+        LOCAL.sheets.forEach(function (s) { s.dirty = false; });
+        LOCAL.added = []; LOCAL.deleted = [];
+        version++;
+        pending = true;
+        persist();
+        scheduleSync();
+      }
+      return result === undefined ? null : clone(result);
     });
     queue = job.catch(function () {});
     return job;
   }
+  function idsOf(book) { var o = {}; book.sheets.forEach(function (s) { o[s.title] = s.id; }); return o; }
+
+  /* Keep the sheet current: when coming back to the tab, every minute while open, and before leaving. */
+  document.addEventListener('visibilitychange', function () {
+    if (!LOCAL) return;
+    if (document.hidden) { if (pending) sync(); } else if (token && Date.now() < tokenExp) sync();
+  });
+  setInterval(function () {
+    if (LOCAL && !document.hidden && !syncing && (pending || (token && Date.now() < tokenExp))) sync();
+  }, 60000);
+  window.addEventListener('beforeunload', function (e) {
+    if (pending || syncing) { e.preventDefault(); e.returnValue = ''; }
+  });
 
   function runner(ok, fail) {
     return new Proxy({}, {
@@ -602,8 +834,61 @@ window.PECUNIA_WEB = true;
       if (userEmail) ls('pecunia_email', userEmail);
       return findOrCreateSheet();
     }).then(function () {
+      return openLocal();
+    }).then(function () {
       hideOverlay();
       readyResolve();
+    });
+  }
+
+  /** The working copy for this sheet: from the browser if we have one, else from the sheet (once). */
+  function openLocal() {
+    if (LOCAL && openedFor === sheetId) return Promise.resolve();
+    return idbGet('book:' + sheetId).then(function (c) {
+      if (c && c.tabs && c.sheetId === sheetId) {
+        LOCAL = bookFrom(c.tabs, null);
+        BASE = c.base || null;
+        pending = !!c.pending;
+        sheetTz = c.tz || sheetTz;
+        openedFor = sheetId;
+        setTimeout(function () { sync(); }, 300);
+        return;
+      }
+      return loadBook().then(function (b) {
+        LOCAL = b;
+        BASE = tabsOf(b);
+        pending = false;
+        openedFor = sheetId;
+        persist();
+      });
+    });
+  }
+  var openedFor = '';
+
+  function openLocalOnly() {
+    return idbGet('book:' + sheetId).then(function (c) {
+      if (!c || !c.tabs || c.sheetId !== sheetId) return false;
+      LOCAL = bookFrom(c.tabs, null);
+      BASE = c.base || null;
+      pending = !!c.pending;
+      sheetTz = c.tz || sheetTz;
+      sheetUrl = c.sheetUrl || sheetUrl;
+      openedFor = sheetId;
+      return true;
+    });
+  }
+
+  function verifyInBackground() {
+    var was = sheetId;
+    api('GET', DRIVE + '/about?fields=user(emailAddress,displayName)').then(function (r) {
+      userEmail = (r.user && r.user.emailAddress) || userEmail;
+      userName = (r.user && r.user.displayName) || '';
+      return findOrCreateSheet();
+    }).then(function () {
+      if (sheetId !== was) { openedFor = ''; return openLocal().then(refreshView); }
+      return sync();
+    }).catch(function (e) {
+      if (e && e.locked) { LOCAL = null; showLocked(e.hasSheet, e.needsPro); }
     });
   }
 
@@ -621,8 +906,9 @@ window.PECUNIA_WEB = true;
   /** Called from the Settings page (web only). */
   window.pecuniaSignOut = function () {
     try { if (token && google.accounts && google.accounts.oauth2) google.accounts.oauth2.revoke(token, function () {}); } catch (e) {}
-    ss('pecunia_token', null); ss('pecunia_exp', null); ls('pecunia_email', null);
-    location.reload();
+    ss('pecunia_token', null); ss('pecunia_exp', null); ls('pecunia_email', null); ls('pecunia_last', null);
+    var leave = function () { idbClear().then(function () { location.reload(); }); };
+    if (pending && LOCAL) sync().then(leave, leave); else leave();
   };
   window.pecuniaUser = function () { return { email: userEmail, name: userName }; };
 
@@ -630,6 +916,18 @@ window.PECUNIA_WEB = true;
     var t = ss('pecunia_token'), exp = Number(ss('pecunia_exp') || 0);
     if (t && Date.now() < exp) {
       token = t; tokenExp = exp;
+      var last = null;
+      try { last = JSON.parse(ls('pecunia_last') || 'null'); } catch (e) {}
+      if (last && last.sheetId) {
+        // Open straight from the copy in this browser; check the sheet and Pro in the background.
+        sheetId = last.sheetId; userEmail = last.email || '';
+        openLocalOnly().then(function (ok) {
+          if (!ok) { afterToken().catch(onStartError); return; }
+          readyResolve();
+          verifyInBackground();
+        });
+        return;
+      }
       afterToken().catch(onStartError);
     } else {
       gate();
@@ -2449,6 +2747,7 @@ $('mb').innerHTML=ic('menu',22);$('logo').innerHTML=ic('wallet',24);$('tbAdd').i
 setInterval(async()=>{if(S.tab!=='inbox'||!S.data||document.hidden||BUSY||$('modal').classList.contains('open'))return;
  const a=document.activeElement;if(a&&/INPUT|SELECT|TEXTAREA/.test(a.tagName))return;
  try{const d=await run('refreshData');if(S.tab==='inbox'&&!$('modal').classList.contains('open')){S.data=d;render()}}catch(e){}},60000);
+window.pecuniaApply=d=>{if(!d||!S.data)return;S.data=d;render()};
 (async function init(){
  const slow=setTimeout(()=>{if(!S.data)V(`<div class="card"><div class="empty">Still loading… The first open after an update can take up to a minute while the data sheet is prepared.<br>If this doesn't change, reload the page.</div></div>`)},25000);
  try{S.data=await run('getData');clearTimeout(slow);S.month=S.data.today.slice(0,7);render()}
