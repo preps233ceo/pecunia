@@ -1,0 +1,151 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pecunia: personal finance for MoMo, bank, card and cash</title>
+<meta name="description" content="Pecunia records your spending from MoMo, bank and card SMS alerts, tracks cash, budgets and savings plans, and shows it all on an interactive dashboard. Made by Preps233 in Accra, Ghana.">
+<link rel="icon" href="assets/icon-64.png" type="image/png">
+<link rel="apple-touch-icon" href="assets/icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap">
+<style>
+:root{--navy:#1e3a8a;--blue:#2563eb;--ink:#0f172a;--ink2:#334155;--mut:#64748b;--bg:#f6f8fb;--card:#fff;--ln:#e6eaf0;--green:#059669;--greens:#e7f8f1;--red:#e11d48;--amber:#d97706;--ambers:#fff7e6;--accs:#eef3ff}
+@media(prefers-color-scheme:dark){:root{--ink:#e8edf5;--ink2:#c3cddb;--mut:#8b97ab;--bg:#0b1120;--card:#121a2b;--ln:#1f2a3d;--green:#34d399;--greens:#0f2e25;--amber:#fbbf24;--ambers:#33270c;--accs:#16233f;--blue:#7fa6ff}}
+*{box-sizing:border-box}html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--ink);font:16.5px/1.6 'Plus Jakarta Sans',system-ui,-apple-system,'Segoe UI',sans-serif}
+a{color:var(--blue)}img{max-width:100%;height:auto;display:block}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+.top{position:sticky;top:0;z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);border-bottom:1px solid var(--ln)}
+.top .wrap{display:flex;align-items:center;gap:18px;height:64px}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:20px;color:var(--ink);text-decoration:none}.brand img{width:36px;height:36px;border-radius:10px}
+.top nav{margin-left:auto;display:flex;gap:18px;flex-wrap:wrap}.top nav a{color:var(--ink2);text-decoration:none;font-weight:600;font-size:15px}.top nav a:hover{color:var(--blue)}
+.hero{padding:56px 0 40px}.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
+h1{font-size:clamp(32px,5vw,52px);line-height:1.08;letter-spacing:-.025em;margin:0 0 18px;font-weight:800}
+h1 em{font-style:normal;color:var(--green)}
+.lede{font-size:19px;color:var(--ink2);margin:0 0 22px;max-width:580px}
+.meta{color:var(--mut);font-size:14.5px;margin:18px 0 0}
+.cta{display:flex;gap:12px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;height:48px;padding:0 22px;border-radius:12px;font-weight:700;text-decoration:none;border:1px solid var(--ln);color:var(--ink);background:var(--card)}
+.btn.p{background:var(--navy);border-color:var(--navy);color:#fff}.btn.soon{cursor:default;color:var(--mut)}
+.heroshots{display:flex;gap:16px;justify-content:center}.heroshots img{width:48%;border-radius:26px;box-shadow:0 20px 50px rgba(15,23,42,.25)}.heroshots img:nth-child(2){margin-top:40px}
+section{padding:56px 0}
+.head{max-width:720px;margin-bottom:26px}.head h2{font-size:clamp(26px,3.2vw,34px);letter-spacing:-.02em;margin:0 0 8px;line-height:1.15}.head p{color:var(--ink2);margin:0 0 10px}
+.features{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.feature{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:22px}
+.feature .i{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;background:var(--accs);color:var(--blue);margin-bottom:12px}
+.feature .i.g{background:var(--greens);color:var(--green)}.feature .i.a{background:var(--ambers);color:var(--amber)}
+.feature h3{margin:0 0 6px;font-size:17.5px}.feature p{margin:0;color:var(--ink2);font-size:15.5px}
+.steps{counter-reset:s;list-style:none;padding:0;margin:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}
+.steps li{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:22px;counter-increment:s}
+.steps li:before{content:counter(s);display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--navy);color:#fff;font-weight:800;margin-bottom:12px}
+.steps h3{margin:0 0 6px;font-size:17px}.steps p{margin:0;color:var(--ink2);font-size:15px}
+.screens{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:16px}
+.screens figure{margin:0}.screens img{border-radius:20px;box-shadow:0 10px 30px rgba(15,23,42,.18)}
+figcaption{color:var(--mut);font-size:14px;margin-top:10px;text-align:center}
+.web{display:grid;grid-template-columns:1.3fr 1fr;gap:32px;align-items:center}.web img{border-radius:14px;border:1px solid var(--ln);box-shadow:0 14px 40px rgba(15,23,42,.14)}
+.web ul{padding-left:20px;color:var(--ink2);margin:0}.web li{margin:6px 0}
+.pro{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.plan{background:var(--card);border:1px solid var(--ln);border-radius:18px;padding:24px}.plan h3{margin:0 0 4px}.plan .tag{display:inline-block;font-size:12.5px;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--greens);color:var(--green);margin-bottom:10px}
+.plan ul{padding-left:20px;margin:10px 0 0;color:var(--ink2)}.plan li{margin:4px 0}
+.privacy{background:var(--card);border:1px solid var(--ln);border-radius:22px;padding:clamp(22px,4vw,40px)}.privacy h2{margin-top:0}.privacy p{color:var(--ink2)}.small{font-size:14px;color:var(--mut)}
+footer{border-top:1px solid var(--ln);padding:28px 0 44px;color:var(--mut);font-size:14.5px}
+footer .wrap{display:flex;gap:18px;flex-wrap:wrap;align-items:center;justify-content:space-between}footer nav{display:flex;gap:16px}
+@media(max-width:900px){.hero .wrap,.web{grid-template-columns:1fr}.features{grid-template-columns:repeat(2,minmax(0,1fr))}.steps{grid-template-columns:repeat(2,minmax(0,1fr))}.screens{grid-template-columns:repeat(3,minmax(0,1fr))}.screens figure:nth-child(n+4){display:none}.heroshots{max-width:460px;margin:0 auto}}
+@media(max-width:560px){.features,.steps,.pro{grid-template-columns:1fr}.screens{grid-template-columns:repeat(2,minmax(0,1fr))}.screens figure:nth-child(3){display:none}.top nav a.hide-s{display:none}.top nav{flex-wrap:nowrap;gap:14px}.top nav a{font-size:14px;white-space:nowrap}.brand{font-size:18px}section{padding:40px 0}.hero{padding-top:36px}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+  <a class="brand" href="about.html"><img src="assets/icon-64.png" alt="" width="36" height="36">Pecunia</a>
+  <nav aria-label="Main"><a href="#features">Features</a><a class="hide-s" href="#pro">Pricing</a><a href="./">Web app</a><a href="privacy.html">Privacy</a></nav>
+</div></header>
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <h1>Every cedi, <em>accounted for</em>, without the typing.</h1>
+    <p class="lede">Pecunia is a personal finance app for how money really moves in Ghana: MoMo, bank, card and cash. It records your transactions from the alerts you already receive, then shows you exactly where your money goes.</p>
+    <div class="cta"><a class="btn p" href="./">Open the web app</a><span class="btn soon">Android app coming to Google Play</span></div>
+    <p class="meta"><b>Android phones and the web</b> · made by Preps233 in Accra, Ghana</p>
+  </div>
+  <div class="heroshots"><img src="assets/phone-home.jpg" width="480" height="1006" alt="Pecunia home screen: income GH₵9,800, expenses GH₵6,214, net savings, total balance and an income vs expenses chart."><img src="assets/phone-inbox.jpg" width="480" height="1006" alt="Pecunia SMS Inbox: a MoMo payment to Melcom captured from SMS, with a category picker."></div>
+</div></section>
+
+<section id="about" style="padding-top:12px"><div class="wrap">
+  <div class="head">
+    <h2>What is Pecunia?</h2>
+    <p>Most of us get paid and pay through several channels at once: mobile money, one or two bank accounts, a card, and cash. Keeping track by hand is tiring, so by the end of the month it's hard to say where the money went. Pecunia brings it all into one place.</p>
+    <p>On Android, Pecunia reads the transaction alerts your MoMo, bank and card providers send you, by SMS or as app notifications, and turns them into records automatically. You add cash in seconds. Pecunia then gives you budgets, savings plans and clear charts of your spending.</p>
+  </div>
+</div></section>
+
+<section id="features" style="padding-top:0"><div class="wrap">
+  <div class="head"><h2>What Pecunia does</h2><p>Everything you need to see, plan and control your money.</p></div>
+  <div class="features">
+    <div class="feature"><div class="i g"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></div><h3>Your SMS does the typing</h3><p>MoMo, bank and card alerts become transactions automatically, with amount, account, payee and date filled in.</p></div>
+    <div class="feature"><div class="i g"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"/><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"/></svg></div><h3>Bank app alerts too</h3><p>Banks that alert you in their app instead of by SMS are covered. If a payment arrives both ways, it's recorded once.</p></div>
+    <div class="feature"><div class="i a"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"/><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"/></svg></div><h3>Sorted for you</h3><p>Type “groceries” or “fuel” in your MoMo reference and the payment lands in that category. Rules like “Shoprite → Food” do the rest.</p></div>
+    <div class="feature"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="12" x="2" y="6" rx="2"/><circle cx="12" cy="12" r="2"/><path d="M6 12h.01M18 12h.01"/></svg></div><h3>Cash in seconds</h3><p>Log cash spending with one tap. An optional evening reminder makes sure nothing slips through.</p></div>
+    <div class="feature"><div class="i a"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/></svg></div><h3>Budgets that carry forward</h3><p>Set a monthly limit per category and see how close you are. Changes apply from that month on.</p></div>
+    <div class="feature"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/></svg></div><h3>Plan projects & purchases</h3><p>See how much to save each month for a project or something you want to buy, and whether your savings can cover it.</p></div>
+    <div class="feature"><div class="i"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/></svg></div><h3>Interactive dashboard</h3><p>On the web, explore all your history: click any chart to filter by month, category, payee, account or weekday.</p></div>
+    <div class="feature"><div class="i g"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M6.34 17.66l-1.41 1.41M19.07 4.93l-1.41 1.41"/></svg></div><h3>Morning summary</h3><p>A short note each morning: what you spent yesterday, the biggest item, and how the month is going.</p></div>
+    <div class="feature"><div class="i a"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"/><path d="M2 12h20"/></svg></div><h3>Made for Africa</h3><p>Ready-made MoMo and bank presets and currencies for Ghana, Nigeria, Kenya, Uganda, South Africa and more. Themes from OLED black to light.</p></div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="head"><h2>How it works</h2></div>
+  <ol class="steps">
+    <li><h3>Set up in a minute</h3><p>Pick your country, MoMo and banks, and a theme. Your accounts are created for you.</p></li>
+    <li><h3>Spend as usual</h3><p>Alerts are recorded as they arrive. Tip: put a category word in the payment reference.</p></li>
+    <li><h3>Review in Inbox</h3><p>Anything Pecunia couldn't sort waits in Inbox: choose a category once, or say “always”.</p></li>
+    <li><h3>See where it goes</h3><p>Charts, budgets and plans show where your money goes and what to change.</p></li>
+  </ol>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="screens">
+    <figure><img src="assets/phone-home.jpg" width="480" height="1006" loading="lazy" alt="Home: money in, money out, savings rate and balances."><figcaption>Your month at a glance</figcaption></figure>
+    <figure><img src="assets/phone-inbox.jpg" width="480" height="1006" loading="lazy" alt="Inbox: captured SMS waiting for a category."><figcaption>SMS captured for you</figcaption></figure>
+    <figure><img src="assets/phone-activity.jpg" width="480" height="1006" loading="lazy" alt="Activity: every transaction, searchable."><figcaption>Every transaction, searchable</figcaption></figure>
+    <figure><img src="assets/phone-budgets.jpg" width="480" height="1006" loading="lazy" alt="Budgets: spending against limits per category."><figcaption>Budgets per category</figcaption></figure>
+    <figure><img src="assets/phone-plans.jpg" width="480" height="1006" loading="lazy" alt="Plans: a solar installation project with savings progress."><figcaption>Projects and savings goals</figcaption></figure>
+  </div>
+  <p class="small" style="text-align:center;margin-top:16px">Screens show sample data.</p>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap web">
+  <img src="assets/web-dashboard.jpg" width="1000" height="726" loading="lazy" alt="Pecunia web dashboard with period filters, totals and a monthly cash-flow chart with running balance.">
+  <div class="head" style="margin:0">
+    <h2>Your money on a big screen</h2>
+    <p>Choose Google storage in the app and the same data opens on the Pecunia website, on any computer.</p>
+    <ul><li>An all-time dashboard with click-to-filter charts</li><li>Year-by-year income, spending and savings rate</li><li>Search, sort and export any view to a spreadsheet</li><li>Changes on the phone and the website stay in sync</li></ul>
+  </div>
+</div></section>
+
+<section id="pro" style="padding-top:0"><div class="wrap">
+  <div class="head"><h2>Free to try, then pay once</h2><p>No subscription.</p></div>
+  <div class="pro">
+    <div class="plan"><h3>Pecunia</h3><span class="tag">Free</span><ul><li>Record income, expenses and transfers</li><li>Accounts, categories and budgets</li><li>Charts, reminders and themes</li><li>Everything stored on your phone</li></ul></div>
+    <div class="plan"><h3>Pecunia Pro</h3><span class="tag">30 days free, then a one-time unlock</span><ul><li>Automatic capture from SMS and bank-app alerts</li><li>Google Drive sync and the Pecunia website</li><li>Projects and planned purchases</li><li>Bought once through Google Play</li></ul></div>
+  </div>
+</div></section>
+
+<section style="padding-top:0"><div class="wrap">
+  <div class="privacy" id="privacy">
+    <h2>Your money data stays yours</h2>
+    <p>Pecunia has no servers and no accounts of its own, and it shows no ads. Your transactions are saved either on your phone or, if you choose, in a spreadsheet in your own Google Drive. Nothing is sold or shared.</p>
+    <p><strong>SMS and notifications.</strong> Pecunia only reads alerts that look like financial transactions, and only after you agree on its explanation screen and in Android's own permission prompt. Other messages and notifications are ignored and never stored.</p>
+    <p><strong>Why Pecunia asks for Google access.</strong> Google sign-in is optional. If you choose Google storage, Pecunia asks only for access to files it creates (the <em>drive.file</em> permission), and uses it to keep your “Pecunia – Data” spreadsheet up to date and to open it on the website. It cannot see any other files in your Drive.</p>
+    <p class="small">Pecunia's use and transfer of information received from Google APIs adheres to the <a href="https://developers.google.com/terms/api-services-user-data-policy">Google API Services User Data Policy</a>, including the Limited Use requirements. Read the full <a href="privacy.html">Privacy Policy</a>.</p>
+  </div>
+</div></section>
+</main>
+<footer><div class="wrap">
+  <span>© 2026 Pecunia by <a href="https://preps233ceo.github.io/">Preps233</a></span>
+  <nav aria-label="Links"><a href="./">Web app</a><a href="privacy.html">Privacy Policy</a></nav>
+  <span>Contact: <a href="mailto:johnshiburah@gmail.com">johnshiburah@gmail.com</a></span>
+</div></footer>
+</body>
+</html>
