@@ -116,6 +116,18 @@ tfoot td{font-weight:700;background:var(--chip)}
 .bar-row{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:22px}
 /* charts & project cards */
 .chart{position:relative;height:290px}
+/* dashboard */
+.dslicer{position:sticky;top:0;z-index:5;padding:16px 18px}.dsrow{display:flex;gap:10px;flex-wrap:wrap;align-items:center}.dsrow+.dsrow{margin-top:12px}
+.dsf select{width:auto;min-width:160px;flex:1;height:44px}.dsf .srch{flex:2}.dsf .srch input{height:44px}
+.dsdates{display:flex;gap:8px;align-items:center}.dsdates input{width:170px;height:44px}
+.dchips{gap:8px}.dchip{display:inline-flex;align-items:center;gap:6px;height:32px;padding:0 10px 0 12px;border-radius:999px;border:1px solid var(--acc);background:var(--accs);color:var(--acc);font:inherit;font-size:13.5px;font-weight:600;cursor:pointer}
+.dhint{margin-top:12px;display:flex;align-items:center;gap:8px;font-size:13.5px}
+.chart.dtall{height:360px}.dsort{cursor:pointer;user-select:none;white-space:nowrap}.dlink{color:inherit;text-decoration:none;border-bottom:1px dashed var(--ln2)}.dlink:hover{color:var(--acc);border-color:var(--acc)}
+.hmw{overflow-x:auto;padding-bottom:4px}.hmm,.hmg{display:grid;gap:3px;width:max-content}.hmm{font-size:12px;color:var(--mut);margin-bottom:6px;height:16px}.hmm span{white-space:nowrap}
+.hmg{grid-template-rows:repeat(7,14px)}.hm{width:14px;height:14px;border-radius:3px;border:0;padding:0;cursor:pointer;background:var(--chip)}
+.hm[style*="--lv"]{background:color-mix(in srgb,var(--no) calc(var(--lv)*100%),var(--chip))}.hm.on{outline:2px solid var(--acc);outline-offset:1px}
+.hml{display:flex;align-items:center;gap:4px;margin-top:10px;font-size:12.5px}.hml i{display:inline-block;width:12px;height:12px;border-radius:3px;background:var(--chip)}.hml i[style]{background:color-mix(in srgb,var(--no) calc(var(--lv)*100%),var(--chip))}
+@container main (max-width:700px){.dsf select{min-width:0;flex:1 1 45%}.dslicer{position:static}.chart.dtall{height:300px}}
 .pgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}
 @container main (max-width:1150px){.pgrid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @container main (max-width:680px){.pgrid{grid-template-columns:minmax(0,1fr)}}
@@ -2163,7 +2175,7 @@ window.addEventListener('error',function(ev){var v=document.getElementById('view
 /* ================================================================
    Icons & small helpers
    ================================================================ */
-const I={grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
+const I={bars:'<path d="M3 3v16a2 2 0 0 0 2 2h16"/><path d="M18 17V9"/><path d="M13 17V5"/><path d="M8 17v-3"/>',x:'<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',grid:'<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/>',
  list:'<path d="M8 6h13"/><path d="M8 12h13"/><path d="M8 18h13"/><path d="M3 6h.01"/><path d="M3 12h.01"/><path d="M3 18h.01"/>',
  pie:'<path d="M21.21 15.89A10 10 0 1 1 8 2.83"/><path d="M22 12A10 10 0 0 0 12 2v10z"/>',
  target:'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="2"/>',
@@ -2203,7 +2215,7 @@ const stats=(arr,cmp)=>`<div class="stats${cmp?' cmp':''}" data-n="${arr.length}
 /* ================================================================
    State & server calls
    ================================================================ */
-const TABS=[['home','grid','Overview'],['tx','list','Transactions'],['inbox','msg','SMS Inbox'],['bud','pie','Budgets'],['prj','target','Projects'],['pur','cart','Planned Purchases'],['set','sliders','Accounts & Settings']];
+const TABS=[['home','grid','Overview'],['dash','bars','Dashboard'],['tx','list','Transactions'],['inbox','msg','SMS Inbox'],['bud','pie','Budgets'],['prj','target','Projects'],['pur','cart','Planned Purchases'],['set','sliders','Accounts & Settings']];
 const PRIORITIES=['High','Medium','Low'];
 const PROJECT_STATUSES=['Planned','Active','On Hold','Completed','Cancelled'];
 const PURCHASE_STATUSES=['Planned','Saving','Bought','Cancelled'];
@@ -2281,7 +2293,7 @@ function paintShell(){
 }
 function render(){
  paintShell();Object.values(S.charts).forEach(c=>c&&c.destroy());S.charts={};
- ({home:pHome,tx:pTx,inbox:pInbox,bud:pBud,prj:pPrj,pur:pPur,set:pSet})[S.tab]();
+ ({home:pHome,dash:pDash,tx:pTx,inbox:pInbox,bud:pBud,prj:pPrj,pur:pPur,set:pSet})[S.tab]();
 }
 function go(t){S.tab=t;menu(0);render();$('main').scrollTop=0}
 function menu(o){const sd=$('side'),op=o===undefined?!sd.classList.contains('open'):!!+o;sd.classList.toggle('open',op);$('scrim').style.display=op?'block':'none'}
@@ -2737,6 +2749,215 @@ const A={
   {submit:'Record purchase',message:'This records the expense in your transactions and marks the item as bought.'});
   if(v)mutate('markPurchaseBought',[id,v],'Purchase recorded')}
 };
+/* ================================================================
+   Dashboard: all-time, interactive (filters + click-to-filter visuals)
+   ================================================================ */
+const DOW=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+S.dash=S.dash||{period:'all',from:'',to:'',type:'',account:'',category:'',who:'',month:'',dow:'',day:'',q:'',sort:'Date',dir:-1,limit:50};
+const who=t=>String(t.Payee||t.Description||'—').trim()||'—';
+const dowOf=d=>{const[y,m,dd]=String(d).split('-').map(Number);return(new Date(y,m-1,dd).getDay()+6)%7};
+function dashRange(){
+ const D=S.dash,today=S.data.today,y=today.slice(0,4),ym=today.slice(0,7);
+ const all=tx().map(t=>String(t.Date)).filter(Boolean).sort();
+ const first=all[0]||today;
+ switch(D.period){
+  case 'month':return[ym+'-01',today];
+  case 'last3':return[addMonths(ym,-2)+'-01',today];
+  case 'last12':return[addMonths(ym,-11)+'-01',today];
+  case 'year':return[y+'-01-01',today];
+  case 'lastyear':return[(+y-1)+'-01-01',(+y-1)+'-12-31'];
+  case 'custom':return[D.from||first,D.to||today];
+  default:return[first<today?first:today,all.length&&all[all.length-1]>today?all[all.length-1]:today];
+ }
+}
+/* Every filter except the one a visual itself controls (so its own bars stay visible, highlighted). */
+function dashRows(skip){
+ const D=S.dash,[a,b]=dashRange(),q=D.q.trim().toLowerCase();
+ return tx().filter(t=>{const d=String(t.Date);
+  if(d<a||d>b)return false;
+  if(skip!=='type'&&D.type&&t.Type!==D.type)return false;
+  if(skip!=='account'&&D.account&&t.Account!==D.account&&t.ToAccount!==D.account)return false;
+  if(skip!=='category'&&D.category&&t.Category!==D.category)return false;
+  if(skip!=='who'&&D.who&&who(t)!==D.who)return false;
+  if(skip!=='month'&&D.month&&d.slice(0,7)!==D.month)return false;
+  if(skip!=='dow'&&D.dow!==''&&dowOf(d)!==+D.dow)return false;
+  if(skip!=='day'&&D.day&&d!==D.day)return false;
+  if(q&&![t.Description,t.Payee,t.Category,t.Account,t.ToAccount].some(v=>String(v||'').toLowerCase().includes(q)))return false;
+  return true});
+}
+function monthsBetween(a,b){const out=[];let m=a.slice(0,7);const e=b.slice(0,7);while(m<=e&&out.length<600){out.push(m);m=addMonths(m,1)}return out}
+const dashChip=(k,label)=>`<button class="dchip" data-act="dashClear" data-id="${k}">${esc(label)} ${ic('x',14)}</button>`;
+
+function pDash(){
+ const D=S.dash,[a,b]=dashRange(),rows=dashRows(),inc=sumType(rows,'Income'),exp=sumType(rows,'Expense'),net=inc-exp;
+ const months=monthsBetween(a,b),nm=Math.max(1,months.length);
+ // same-length period just before, for the change arrows
+ let prev=null;if(D.period!=='all'&&!D.month&&!D.day){const days=Math.round((new Date(b)-new Date(a))/864e5)+1,pb=new Date(new Date(a)-864e5),pa=new Date(pb-(days-1)*864e5);
+  const iso=d=>d.toISOString().slice(0,10),save=S.dash;S.dash={...save,period:'custom',from:iso(pa),to:iso(pb)};const pr=dashRows();S.dash=save;prev={inc:sumType(pr,'Income'),exp:sumType(pr,'Expense')}}
+ const delta=(now,was,good)=>{if(!prev||!was)return'';const c=(now-was)/Math.abs(was)*100,up=c>=0;return` · <span class="${(up===good)?'pos':'neg'}">${up?'▲':'▼'} ${Math.abs(c).toFixed(0)}%</span>`};
+ const periods=[['all','All time'],['year','This year'],['last12','Last 12 months'],['last3','Last 3 months'],['month','This month'],['lastyear','Last year'],['custom','Custom']];
+ const chips=[D.type&&dashChip('type','Type: '+D.type),D.account&&dashChip('account','Account: '+D.account),D.category&&dashChip('category','Category: '+D.category),
+  D.who&&dashChip('who','Payee: '+D.who),D.month&&dashChip('month','Month: '+monthLabel(D.month)),D.dow!==''&&dashChip('dow','Day: '+DOW[+D.dow]),
+  D.day&&dashChip('day','Date: '+niceDate(D.day)),D.q&&dashChip('q','Search: '+D.q)].filter(Boolean);
+ const accs=accNames(),catNames=[...new Set(tx().map(t=>t.Category).filter(Boolean))].sort();
+ V(head('Dashboard',`${niceDate(a)} – ${niceDate(b)} · ${rows.length.toLocaleString()} transaction${rows.length===1?'':'s'}`,
+   `<button class="btn" data-act="dashCsv">${ic('dl',18)} Export</button>`)+
+  `<div class="card dslicer">
+    <div class="dsrow"><div class="sub">${periods.map(([k,l])=>`<button class="${D.period===k?'on':''}" data-act="dashPeriod" data-id="${k}">${l}</button>`).join('')}</div>
+     ${D.period==='custom'?`<div class="dsdates"><input type="date" data-dash="from" value="${esc(D.from||a)}"><span class="mut">to</span><input type="date" data-dash="to" value="${esc(D.to||b)}"></div>`:''}</div>
+    <div class="dsrow dsf">
+     <select data-dash="type"><option value="">All types</option>${opts(['Expense','Income','Transfer'],D.type)}</select>
+     <select data-dash="account"><option value="">All accounts</option>${opts(accs,D.account)}</select>
+     <select data-dash="category"><option value="">All categories</option>${opts(catNames,D.category)}</select>
+     <div class="srch">${ic('search',18)}<input data-dash="q" placeholder="Search description, payee…" value="${esc(D.q)}"></div>
+    </div>
+    ${chips.length?`<div class="dsrow dchips">${chips.join('')}<button class="btn s" data-act="dashReset">Clear all filters</button></div>`:`<div class="mut dhint">${ic('wand',16)} Tip: click any bar, slice, day or row below to filter the whole dashboard.</div>`}
+   </div>`+
+  stats([stat('Income','up',fmt(inc),`${rows.filter(t=>t.Type==='Income').length} entries${delta(inc,prev&&prev.inc,true)}`,'pos'),
+   stat('Expenses','down',fmt(exp),`${rows.filter(t=>t.Type==='Expense').length} entries${delta(exp,prev&&prev.exp,false)}`,'neg'),
+   stat('Net savings','coins',fmt(net),inc>0?`Savings rate ${(net/inc*100).toFixed(1)}%`:(net>=0?'Surplus':'Deficit'),net>=0?'pos':'neg'),
+   stat('Avg / month','clock',fmt(exp/nm),`Spending over ${nm} month${nm===1?'':'s'} · income ${fmt0(inc/nm)}`)])+
+  `<div class="card">${hd('up','Cash flow over time','Income, spending and net per month, with your running balance · click a month to focus on it','','green')}<div class="chart dtall"><canvas id="dTrend"></canvas></div></div>
+  <div class="g2">
+   <div class="card">${hd('pie','Spending by category','Click a bar to filter','','amber')}<div class="chart dtall"><canvas id="dCat"></canvas></div></div>
+   <div class="card">${hd('tag','Top payees & items','Where the most money went · click to filter','','red')}<div class="chart dtall"><canvas id="dWho"></canvas></div></div>
+  </div>
+  <div class="g2">
+   <div class="card">${hd('bank','By account','Money in and out of each account · click to filter')}<div class="chart"><canvas id="dAcc"></canvas></div></div>
+   <div class="card">${hd('grid','Spending by weekday','Average spent on each day of the week · click to filter','','vio')}<div class="chart"><canvas id="dDow"></canvas></div></div>
+  </div>
+  <div class="card">${hd('target','Top categories over time','How your biggest spending categories move month to month')}<div class="chart dtall"><canvas id="dStack"></canvas></div></div>
+  <div class="card">${hd('clock','Daily spending','Last 12 months of the period · darker means more spent · click a day','','red')}${heatmap(b)}</div>
+  ${yearTable()}
+  ${dashTable(rows)}`);
+ dashCharts(rows,months);
+}
+
+function heatmap(endIso){
+ const rows=dashRows('day').filter(t=>t.Type==='Expense'),by={};rows.forEach(t=>{by[t.Date]=(by[t.Date]||0)+n(t.Amount)});
+ const end=new Date(endIso+'T00:00:00'),start=new Date(end);start.setDate(start.getDate()-364);start.setDate(start.getDate()-((start.getDay()+6)%7));
+ const max=Math.max(1,...Object.values(by));let cells='',months='',lastM=-1,col=0;
+ for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){
+  const iso=d.toISOString().slice(0,10),loc=`${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`,v=by[loc]||0,dw=(d.getDay()+6)%7;
+  if(dw===0){col++;if(d.getMonth()!==lastM){months+=`<span style="grid-column:${col}">${d.toLocaleDateString('en-GB',{month:'short'})}</span>`;lastM=d.getMonth()}}
+  const lv=v?Math.max(.18,Math.min(1,Math.sqrt(v/max))):0;
+  cells+=`<button class="hm${S.dash.day===loc?' on':''}" style="grid-column:${col};grid-row:${dw+1};${lv?`--lv:${lv}`:''}" data-act="dashDay" data-id="${loc}" title="${niceDate(loc)}: ${v?fmt(v):'no spending'}"></button>`;
+ }
+ return`<div class="hmw"><div class="hmm" style="grid-template-columns:repeat(${col},14px)">${months}</div><div class="hmg" style="grid-template-columns:repeat(${col},14px)">${cells}</div>
+  <div class="hml mut">Less <i></i><i style="--lv:.35"></i><i style="--lv:.65"></i><i style="--lv:1"></i> More</div></div>`;
+}
+
+function yearTable(){
+ const rows=dashRows(),by={};rows.forEach(t=>{const y=String(t.Date).slice(0,4);by[y]=by[y]||{i:0,e:0,n:0};by[y].n++;if(t.Type==='Income')by[y].i+=n(t.Amount);if(t.Type==='Expense')by[y].e+=n(t.Amount)});
+ const ys=Object.keys(by).sort().reverse();if(ys.length<1)return'';
+ return`<div class="tw"><div class="twh"><span class="t"><span class="chi">${ic('list',22)}</span>Year by year</span></div><div class="ov"><table><thead><tr><th>Year</th><th class="num">Income</th><th class="num">Expenses</th><th class="num">Net</th><th class="num">Savings rate</th><th class="num">Entries</th></tr></thead><tbody>
+  ${ys.map(y=>{const r=by[y],nt=r.i-r.e;return`<tr><td><b>${y}</b></td><td class="num pos">${fmt(r.i)}</td><td class="num neg">${fmt(r.e)}</td><td class="num ${nt>=0?'pos':'neg'}"><b>${fmt(nt)}</b></td><td class="num">${r.i>0?(nt/r.i*100).toFixed(1)+'%':'—'}</td><td class="num">${r.n}</td></tr>`}).join('')}</tbody></table></div></div>`;
+}
+
+function dashTable(rows){
+ const D=S.dash,k=D.sort,dir=D.dir,val=t=>k==='Amount'?n(t.Amount):k==='Who'?who(t).toLowerCase():String(t[k]||'').toLowerCase();
+ const list=rows.slice().sort((x,y)=>{const a=val(x),b=val(y);return(a<b?-1:a>b?1:0)*dir||String(y.Date).localeCompare(String(x.Date))});
+ const th=(key,label,num)=>`<th class="${num?'num ':''}dsort" data-act="dashSort" data-id="${key}">${label}${k===key?(dir>0?' ▲':' ▼'):''}</th>`;
+ const shown=list.slice(0,D.limit);
+ return`<div class="tw"><div class="twh"><span class="t"><span class="chi">${ic('list',22)}</span>Transactions in view</span><span class="mut">${list.length.toLocaleString()} shown by the filters · click a row's payee or category to filter</span></div>
+  <div class="ov"><table><thead><tr>${th('Date','Date')}${th('Who','Payee / description')}${th('Category','Category')}${th('Account','Account')}${th('Type','Type')}${th('Amount','Amount',1)}</tr></thead><tbody>
+  ${shown.map(t=>`<tr><td>${niceDate(t.Date)}</td><td><a href="#" class="dlink" data-act="dashWho" data-id="${esc(who(t))}">${esc(who(t))}</a>${t.Payee&&t.Description&&t.Description!==t.Payee?`<div class="mut">${esc(t.Description)}</div>`:''}</td>
+   <td>${t.Category?`<a href="#" class="dlink" data-act="dashCat" data-id="${esc(t.Category)}">${esc(t.Category)}</a>`:'—'}</td><td>${esc(t.Account)}${t.Type==='Transfer'&&t.ToAccount?` → ${esc(t.ToAccount)}`:''}</td><td>${typePill(t.Type)}</td><td class="num ${amtCls(t)}"><b>${sign(t)}${fmt(t.Amount)}</b></td></tr>`).join('')||`<tr><td colspan="6"><div class="empty">No transactions match these filters.</div></td></tr>`}
+  </tbody></table></div>${list.length>shown.length?`<div style="padding:14px 20px;text-align:center"><button class="btn s" data-act="dashMore">Show ${Math.min(100,list.length-shown.length)} more</button></div>`:''}</div>`;
+}
+
+function dashCharts(rows,months){
+ if(!window.Chart){document.querySelectorAll('#view canvas').forEach(c=>c.parentNode.innerHTML='<div class="empty">Chart library could not load. Check your internet connection.</div>');return}
+ const css=getComputedStyle(document.documentElement),ln=css.getPropertyValue('--ln').trim(),card=css.getPropertyValue('--card').trim();
+ Chart.defaults.font.family="'Plus Jakarta Sans',system-ui,sans-serif";Chart.defaults.color=css.getPropertyValue('--mut').trim();
+ const D=S.dash,dim=(on,c)=>on?c:c+'40',money=v=>Number(v).toLocaleString('en-US',{maximumFractionDigits:0});
+ const yAxis={grid:{color:ln},border:{display:false},ticks:{callback:money}},xNo={grid:{display:false}};
+ const tip={callbacks:{label:c=>`${c.dataset.label?c.dataset.label+': ':''}${fmt(c.raw)}`}};
+ const pick=(key,val)=>{S.dash[key]=S.dash[key]===val?'':val;S.dash.limit=50;setTimeout(render,0)}; // redraw after the chart finishes handling the click
+ const click=(labels,key)=>(e,els)=>{if(els.length)pick(key,labels[els[0].index])};
+ const pointer={interaction:{mode:'index',intersect:false},onHover:(e,els)=>{e.native.target.style.cursor=els.length?'pointer':'default'}};
+
+ // 1 cash flow by month (+ running balance)
+ const rm=dashRows('month'),mi=months.map(m=>sumType(rm.filter(t=>String(t.Date).slice(0,7)===m),'Income')),me=months.map(m=>sumType(rm.filter(t=>String(t.Date).slice(0,7)===m),'Expense'));
+ const openBal=S.data.Accounts.reduce((s,a)=>s+n(a.OpeningBalance),0),firstM=months[0]||'';
+ let run=openBal+tx().filter(t=>String(t.Date).slice(0,7)<firstM).reduce((s,t)=>s+(t.Type==='Income'?n(t.Amount):t.Type==='Expense'?-n(t.Amount):0),0);
+ const bal=months.map((m,i)=>run+=mi[i]-me[i]);
+ const on=i=>!D.month||months[i]===D.month;
+ const hideBal=!!(D.type||D.account||D.category||D.who||D.q||D.dow!==''); // a filtered balance would mislead
+ S.charts.dTrend=new Chart($('dTrend'),{data:{labels:months.map(m=>monthLabel(m,true)),datasets:[
+  {type:'bar',label:'Income',data:mi,backgroundColor:months.map((m,i)=>dim(on(i),'#10b981')),borderRadius:4,maxBarThickness:26},
+  {type:'bar',label:'Expenses',data:me,backgroundColor:months.map((m,i)=>dim(on(i),'#f43f5e')),borderRadius:4,maxBarThickness:26},
+  {type:'line',label:'Net',data:mi.map((v,i)=>v-me[i]),borderColor:'#2563eb',backgroundColor:'#2563eb',tension:.3,pointRadius:months.length>36?0:2},
+  {type:'line',label:'Balance (all accounts)',data:bal,borderColor:'#7c3aed',backgroundColor:'#7c3aed22',fill:true,borderDash:[5,4],tension:.3,pointRadius:0,yAxisID:'y2',hidden:hideBal}]},
+  options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},onClick:(e,els)=>{if(els.length)pick('month',months[els[0].index])},...pointer,
+   scales:{x:xNo,y:yAxis,y2:{display:!hideBal,position:'right',grid:{display:false},border:{display:false},ticks:{callback:money}}},
+   plugins:{legend:{labels:{boxWidth:12,usePointStyle:true}},tooltip:tip}}});
+
+ // 2 categories (expenses unless a type is chosen)
+ const ty=D.type&&D.type!=='Transfer'?D.type:'Expense',rc=dashRows('category').filter(t=>t.Type===ty);
+ let cat=groupSum(rc,'Category');if(cat.length>12){const rest=cat.slice(11).reduce((s,c)=>s+c[1],0);cat=cat.slice(0,11).concat([['Other categories',rest]])}
+ const cl=cat.map(c=>c[0]);
+ S.charts.dCat=new Chart($('dCat'),{type:'bar',data:{labels:cl,datasets:[{label:ty==='Income'?'Income':'Spent',data:cat.map(c=>c[1]),
+   backgroundColor:cat.map((c,i)=>dim(!D.category||D.category===c[0],catColor(c[0],i))),borderRadius:5,maxBarThickness:22}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,onClick:(e,els)=>{if(els.length&&cl[els[0].index]!=='Other categories')pick('category',cl[els[0].index])},...pointer,
+   scales:{x:yAxis,y:{grid:{display:false},ticks:{autoSkip:false}}},plugins:{legend:{display:false},tooltip:tip}}});
+
+ // 3 top payees
+ const rw=dashRows('who').filter(t=>t.Type===ty),wm={};rw.forEach(t=>{const k=who(t);wm[k]=(wm[k]||0)+n(t.Amount)});
+ const w=Object.entries(wm).sort((x,y)=>y[1]-x[1]).slice(0,10),wl=w.map(x=>x[0]);
+ S.charts.dWho=new Chart($('dWho'),{type:'bar',data:{labels:wl.map(s=>s.length>26?s.slice(0,25)+'…':s),datasets:[{label:ty==='Income'?'Received':'Spent',data:w.map(x=>x[1]),
+   backgroundColor:wl.map(x=>dim(!D.who||D.who===x,ty==='Income'?'#10b981':'#f43f5e')),borderRadius:5,maxBarThickness:22}]},
+  options:{indexAxis:'y',maintainAspectRatio:false,onClick:click(wl,'who'),...pointer,scales:{x:yAxis,y:{grid:{display:false},ticks:{autoSkip:false}}},plugins:{legend:{display:false},tooltip:tip}}});
+
+ // 4 accounts: in vs out
+ const ra=dashRows('account'),al=accNames().filter(a=>ra.some(t=>t.Account===a||t.ToAccount===a));
+ const ain=al.map(a=>ra.filter(t=>(t.Type==='Income'&&t.Account===a)||(t.Type==='Transfer'&&t.ToAccount===a)).reduce((s,t)=>s+n(t.Amount),0));
+ const aout=al.map(a=>ra.filter(t=>(t.Type==='Expense'||t.Type==='Transfer')&&t.Account===a).reduce((s,t)=>s+n(t.Amount),0));
+ S.charts.dAcc=new Chart($('dAcc'),{type:'bar',data:{labels:al,datasets:[
+   {label:'In',data:ain,backgroundColor:al.map(a=>dim(!D.account||D.account===a,'#10b981')),borderRadius:4,maxBarThickness:28},
+   {label:'Out',data:aout,backgroundColor:al.map(a=>dim(!D.account||D.account===a,'#f43f5e')),borderRadius:4,maxBarThickness:28}]},
+  options:{maintainAspectRatio:false,onClick:click(al,'account'),...pointer,scales:{x:xNo,y:yAxis},plugins:{legend:{labels:{boxWidth:12,usePointStyle:true}},tooltip:tip}}});
+
+ // 5 weekday: average spend per occurrence of that weekday in the period
+ const rd=dashRows('dow').filter(t=>t.Type==='Expense'),[pa,pb]=dashRange(),days=Math.max(1,Math.round((new Date(pb)-new Date(pa))/864e5)+1),weeks=days/7;
+ const dsum=DOW.map((_,i)=>rd.filter(t=>dowOf(t.Date)===i).reduce((s,t)=>s+n(t.Amount),0)/Math.max(1,weeks));
+ S.charts.dDow=new Chart($('dDow'),{type:'bar',data:{labels:DOW,datasets:[{label:'Average spent',data:dsum,
+   backgroundColor:DOW.map((_,i)=>dim(D.dow===''||+D.dow===i,'#7c3aed')),borderRadius:6,maxBarThickness:40}]},
+  options:{maintainAspectRatio:false,onClick:(e,els)=>{if(els.length)pick('dow',String(els[0].index))},...pointer,scales:{x:xNo,y:yAxis},plugins:{legend:{display:false},tooltip:tip}}});
+
+ // 6 top categories over time (stacked)
+ const top=groupSum(rows.filter(t=>t.Type===ty),'Category').slice(0,5).map(c=>c[0]);
+ S.charts.dStack=new Chart($('dStack'),{type:'line',data:{labels:months.map(m=>monthLabel(m,true)),datasets:top.map((c,i)=>({label:c,
+   data:months.map(m=>rows.filter(t=>t.Type===ty&&t.Category===c&&String(t.Date).slice(0,7)===m).reduce((s,t)=>s+n(t.Amount),0)),
+   borderColor:catColor(c,i),backgroundColor:catColor(c,i)+'55',fill:true,tension:.3,pointRadius:0}))},
+  options:{maintainAspectRatio:false,interaction:{mode:'index',intersect:false},onClick:(e,els)=>{if(els.length)pick('month',months[els[0].index])},...pointer,
+   scales:{x:xNo,y:{...yAxis,stacked:true}},plugins:{legend:{labels:{boxWidth:12,usePointStyle:true}},tooltip:tip}}});
+}
+
+function dashCsv(){
+ const rows=dashRows(),h=['Date','Type','Amount','Account','ToAccount','Category','Payee','Description'];
+ const q=v=>{const s=String(v==null?'':v);return/[",\n]/.test(s)?'"'+s.replace(/"/g,'""')+'"':s};
+ const csv=[h.join(',')].concat(rows.map(t=>h.map(k=>q(t[k])).join(','))).join('\n');
+ const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([csv],{type:'text/csv'}));a.download='pecunia-dashboard.csv';a.click();setTimeout(()=>URL.revokeObjectURL(a.href),2000);
+}
+
+let dashT=null;
+document.addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.dash;if(!k||k==='q')return;
+ if(k==='from'||k==='to'){S.dash[k]=e.target.value;S.dash.period='custom'}else S.dash[k]=e.target.value;S.dash.limit=50;render()});
+document.addEventListener('input',e=>{if(!(e.target.dataset&&e.target.dataset.dash==='q'))return;clearTimeout(dashT);const v=e.target.value;
+ dashT=setTimeout(()=>{S.dash.q=v;S.dash.limit=50;render();const i=document.querySelector('[data-dash="q"]');if(i){i.focus();i.setSelectionRange(v.length,v.length)}},350)});
+
+Object.assign(A,{
+ dashPeriod:id=>{S.dash.period=id;S.dash.month='';S.dash.day='';S.dash.limit=50;render()},
+ dashClear:id=>{S.dash[id]='';S.dash.limit=50;render()},
+ dashReset:()=>{Object.assign(S.dash,{type:'',account:'',category:'',who:'',month:'',dow:'',day:'',q:'',limit:50});render()},
+ dashSort:id=>{if(S.dash.sort===id)S.dash.dir*=-1;else{S.dash.sort=id;S.dash.dir=id==='Date'||id==='Amount'?-1:1}render()},
+ dashMore:()=>{S.dash.limit+=100;render()},
+ dashDay:id=>{S.dash.day=S.dash.day===id?'':id;S.dash.limit=50;render()},
+ dashWho:id=>{S.dash.who=S.dash.who===id?'':id;S.dash.limit=50;render()},
+ dashCat:id=>{S.dash.category=S.dash.category===id?'':id;S.dash.limit=50;render()},
+ dashCsv:()=>dashCsv()
+});
 document.addEventListener('change',e=>{if(e.target.id==='month'&&e.target.value){S.month=e.target.value;render()}});
 document.addEventListener('click',e=>{const b=e.target.closest('[data-act]');if(!b||!A[b.dataset.act])return;e.preventDefault();A[b.dataset.act](b.dataset.id,b)});
 
