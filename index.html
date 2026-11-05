@@ -670,7 +670,7 @@ const SCHEMA = {
   Projects:     ['ID', 'Name', 'Description', 'Budget', 'SetAside', 'StartDate', 'TargetDate', 'Priority', 'Status', 'CreatedAt'],
   Purchases:    ['ID', 'Item', 'EstCost', 'SavedSoFar', 'Priority', 'TargetDate', 'Status', 'ProjectID', 'Notes', 'CreatedAt'],
   Settings:     ['Key', 'Value'],
-  SmsLog:       ['ID', 'ReceivedAt', 'SmsDate', 'Sender', 'Message', 'Status', 'Note', 'Type', 'Amount', 'Fee', 'Balance', 'Payee', 'Ref', 'TxID', 'Account', 'TransactionID'],
+  SmsLog:       ['ID', 'ReceivedAt', 'SmsDate', 'Sender', 'Message', 'Status', 'Note', 'Type', 'Amount', 'Fee', 'Balance', 'Payee', 'Ref', 'TxID', 'Account', 'TransactionID', 'Channel', 'SentAt'],
   Rules:        ['ID', 'Keyword', 'Category', 'CreatedAt'],
   Budgets:      ['ID', 'Category', 'Month', 'Amount', 'CreatedAt']   // a limit applies from Month onwards until the next change
 };
