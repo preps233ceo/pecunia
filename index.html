@@ -1425,7 +1425,7 @@ function recordParsed_(ss, p, account, date, smsId, text) {
       ToAccount: cash.Name, Description: txt_('Cash withdrawal' + (p.payee ? ' – ' + p.payee : '')) });
   } else {
     rec = Object.assign({}, base, { ID: newId_('Transactions'), Type: p.type, Amount: p.amount,
-      Category: ruleCategory_(ss, p.type, [p.payee, p.ref, text].join(' ')) || UNCAT,
+      Category: smsCategory_(ss, p.type, p.payee, p.ref, text) || UNCAT,
       Description: txt_(p.payee || p.ref || (/\bcard\b/i.test(text) ? (p.type === 'Income' ? 'Card top-up' : 'Card payment') : (p.type === 'Income' ? 'Money received' : 'Payment'))) });
   }
   appendObj_(ss, 'Transactions', rec);
@@ -1500,6 +1500,43 @@ function ruleCategory_(ss, type, haystack) {
   const rules = readTable_(ss, 'Rules').filter(function (r) { return str_(r.Keyword) && cats.indexOf(r.Category) > -1; })
     .sort(function (a, b) { return String(b.Keyword).length - String(a.Keyword).length; });
   for (let i = 0; i < rules.length; i++) if (wordIn_(String(rules[i].Keyword).toLowerCase(), haystack)) return rules[i].Category;
+  return '';
+}
+
+/** Rules first, then a category named in the payment reason, then anywhere in the message (same as the app). */
+function smsCategory_(ss, type, payee, ref, text) {
+  const rule = ruleCategory_(ss, type, [payee, ref, text].join(' '));
+  if (rule) return rule;
+  const skip = ['other', 'others', 'transfer', 'money received', 'payment', 'income', 'expense'];
+  const weak = ['other', 'others', 'income', 'received', 'side', 'personal', 'care', 'returns', 'support', 'fees', 'charges', 'money',
+    'payment', 'transfer', 'general', 'misc', 'with', 'from', 'your'];
+  const cats = readTable_(ss, 'Categories').filter(function (c) { return c.Type === type; }).map(function (c) { return str_(c.Name); })
+    .filter(function (n) { return n.length >= 3 && n !== UNCAT && n !== FEE_CATEGORY && skip.indexOf(n.toLowerCase()) < 0; });
+  function keysFor(name, words) {
+    const n = name.toLowerCase().trim();
+    const keys = [n];
+    n.split(/\s*(?:&|\/|,|\(|\)|\+|\band\b)\s*/).forEach(function (part) {
+      const t = part.trim();
+      if (t.length >= 3 && skip.indexOf(t) < 0 && weak.indexOf(t) < 0) keys.push(t);
+      if (words) t.split(/\s+/).forEach(function (w) { if (w.length >= 4 && weak.indexOf(w) < 0) keys.push(w); });
+    });
+    const out = [];
+    keys.forEach(function (k) {
+      out.push(k, k + 's');
+      if (k.length > 4 && /s$/.test(k) && !/ss$/.test(k)) out.push(k.slice(0, -1));
+      if (/ies$/.test(k)) out.push(k.slice(0, -3) + 'y');
+    });
+    return out;
+  }
+  const hays = [[ref, true], [text, false]];
+  for (let h = 0; h < hays.length; h++) {
+    const hay = str_(hays[h][0]).toLowerCase();
+    if (!hay) continue;
+    const pairs = [];
+    cats.forEach(function (c) { keysFor(c, hays[h][1]).forEach(function (k) { pairs.push([k, c]); }); });
+    pairs.sort(function (a, b) { return b[0].length - a[0].length; });
+    for (let i = 0; i < pairs.length; i++) if (wordIn_(pairs[i][0], hay)) return pairs[i][1];
+  }
   return '';
 }
 
@@ -1697,7 +1734,7 @@ function testSms(text, sender) {
   return Object.assign(p, {
     sender: sender,
     account: matchAccount_(ss, sender, text, p.payee),
-    category: p.type ? (ruleCategory_(ss, p.type, [p.payee, p.ref, text].join(' ')) || UNCAT) : ''
+    category: p.type ? (smsCategory_(ss, p.type, p.payee, p.ref, text) || UNCAT) : ''
   });
 }
 
